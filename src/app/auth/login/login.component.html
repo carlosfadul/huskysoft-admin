@@ -1,6 +1,9 @@
-<div class="login-wrapper">
-  <img src="assets/images/angular.svg" alt="Huskysoft Logo" class="logo" />
 
+<div class="logo-container">
+  <img src="img/huskysoft-logo.png" alt="Huskysoft Logo" class="logo">
+</div>
+
+<div class="login-container">
   <mat-card class="login-card">
     <mat-card-title>Iniciar Sesión</mat-card-title>
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
@@ -40,3 +43,4 @@
     </form>
   </mat-card>
 </div>
+
