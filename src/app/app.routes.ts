@@ -23,8 +23,19 @@ export const routes: Routes = [
     path: 'veterinarias',
     loadComponent: () =>
       import('./pages/veterinarias/veterinarias.component').then(m => m.VeterinariasComponent)
+  },
+  {
+    path: 'veterinaria/:id',
+    loadComponent: () =>
+      import('./pages/veterinaria-admin/veterinaria-admin.component').then(m => m.VeterinariaAdminComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'veterinaria/:id/sucursales',
+    loadComponent: () =>
+      import('./pages/sucursales/sucursales.component').then(m => m.SucursalesComponent),
+    canActivate: [authGuard]
   }
   
-  
-  
+    
 ];
