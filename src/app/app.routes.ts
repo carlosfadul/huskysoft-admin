@@ -18,6 +18,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [authGuard]
+  },
+  {
+    path: 'veterinarias',
+    loadComponent: () =>
+      import('./pages/veterinarias/veterinarias.component').then(m => m.VeterinariasComponent)
   }
+  
+  
   
 ];

@@ -10,10 +10,16 @@ import { AuthService } from '../../auth/auth.service';
   standalone: true,
   imports: [CommonModule, MatButtonModule],
   template: `
-    <h1>Bienvenido al panel de control</h1>
-    <p *ngIf="usuario">👋 Hola, usuario: {{ usuario.nombre }}</p>
-    <button mat-raised-button color="warn" (click)="logout()">Cerrar sesión</button>
-  `
+  <h1>Bienvenido al panel de control</h1>
+  <p *ngIf="usuario">👋 Hola, {{ usuario.nombre }}</p>
+
+  <div class="acciones">
+    <button mat-raised-button color="primary" (click)="irAVeterinarias()">Gestionar Veterinarias</button>
+  </div>
+
+  <button mat-raised-button color="warn" (click)="logout()">Cerrar sesión</button>
+`,
+
 })
 export class DashboardComponent {
 
@@ -30,4 +36,8 @@ export class DashboardComponent {
     this.authService.logout();
     this.router.navigate(['/auth']);
   }
+  irAVeterinarias() {
+    this.router.navigate(['/veterinarias']);
+  }
+  
 }
