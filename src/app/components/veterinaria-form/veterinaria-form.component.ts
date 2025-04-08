@@ -20,40 +20,41 @@ import { VeterinariaService } from '../../services/veterinaria.service';
   ],
   template: `
     <h2 mat-dialog-title>{{ data?.veterinaria ? 'Editar' : 'Nueva' }} Veterinaria</h2>
-    
+
     <form [formGroup]="form" (ngSubmit)="guardar()" enctype="multipart/form-data">
 
-      <!-- Nombre -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Nombre</mat-label>
         <input matInput formControlName="veterinaria_nombre" required>
       </mat-form-field>
 
-      <!-- NIT -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>NIT</mat-label>
         <input matInput formControlName="veterinaria_nit">
       </mat-form-field>
 
-      <!-- Teléfono -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Teléfono</mat-label>
         <input matInput formControlName="veterinaria_telefono">
       </mat-form-field>
 
-      <!-- Dirección -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Dirección</mat-label>
         <input matInput formControlName="veterinaria_direccion">
       </mat-form-field>
 
-      <!-- Logo -->
+      <!-- Input de archivo fuera del mat-form-field -->
       <div class="full-width">
-        <label for="logo">Logo:</label><br>
-        <input type="file" id="logo" (change)="onFileSelected($event)" />
+        <label>Logo:</label><br>
+        <input type="file" accept="image/*" (change)="onFileSelected($event)">
       </div>
 
-      <!-- Botones -->
+      <!-- Vista previa -->
+      <div class="full-width" *ngIf="logoPreview">
+        <label>Vista previa:</label><br>
+        <img [src]="logoPreview" alt="Vista previa del logo" width="100" height="100" style="object-fit: cover; border-radius: 8px;">
+      </div>
+
       <div class="acciones">
         <button mat-button type="button" (click)="dialogRef.close()">Cancelar</button>
         <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Guardar</button>
@@ -76,6 +77,7 @@ import { VeterinariaService } from '../../services/veterinaria.service';
 export class VeterinariaFormComponent {
   form: FormGroup;
   selectedFile: File | null = null;
+  logoPreview: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -89,10 +91,28 @@ export class VeterinariaFormComponent {
       veterinaria_telefono: [data?.veterinaria?.veterinaria_telefono || ''],
       veterinaria_direccion: [data?.veterinaria?.veterinaria_direccion || '']
     });
+
+    // Vista previa desde backend
+    if (data?.veterinaria?.veterinaria_id) {
+      this.logoPreview = `http://localhost:3000/api/veterinarias/${data.veterinaria.veterinaria_id}/logo`;
+    }
   }
 
   onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0] || null;
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      this.selectedFile = file;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.logoPreview = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert('Por favor selecciona un archivo de imagen válido.');
+      this.selectedFile = null;
+      this.logoPreview = null;
+    }
   }
 
   guardar() {
@@ -117,3 +137,4 @@ export class VeterinariaFormComponent {
     }
   }
 }
+

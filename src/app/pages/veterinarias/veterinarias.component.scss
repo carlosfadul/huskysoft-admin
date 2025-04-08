@@ -1,0 +1,13 @@
+table {
+    width: 100%;
+    overflow-x: auto;
+    display: block;
+  }
+  
+  .acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  

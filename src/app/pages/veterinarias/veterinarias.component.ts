@@ -20,6 +20,16 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
     <table mat-table [dataSource]="veterinarias" class="mat-elevation-z8" *ngIf="veterinarias.data.length">
 
+    columnas: string[] = ['veterinaria_logo', 'veterinaria_nombre', 'veterinaria_nit', 'veterinaria_telefono', 'veterinaria_estado', 'acciones'];
+
+      
+      <!-- Logo -->
+      <ng-container matColumnDef="veterinaria_logo">
+        <th mat-header-cell *matHeaderCellDef> Logo </th>
+        <td mat-cell *matCellDef="let v">
+          <img [src]="'http://localhost:3000/api/veterinarias/' + v.veterinaria_id + '/logo'" width="50" height="50" style="object-fit: cover;" *ngIf="v.veterinaria_logo">
+        </td>
+      </ng-container>
       <!-- Nombre -->
       <ng-container matColumnDef="veterinaria_nombre">
         <th mat-header-cell *matHeaderCellDef> Nombre </th>
@@ -72,14 +82,13 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 })
 export class VeterinariasComponent implements OnInit {
   veterinarias = new MatTableDataSource<any>();
-  columnas: string[] = [
-    'veterinaria_nombre',
-    'veterinaria_nit',
-    'veterinaria_direccion',
-    'veterinaria_telefono',
-    'veterinaria_estado',
-    'acciones'
-  ];
+  columnas: string[] = ['veterinaria_logo', 
+                        'veterinaria_nombre',
+                        'veterinaria_nit', 
+                        'veterinaria_telefono', 
+                        'veterinaria_estado', 
+                        'acciones'];
+
 
   constructor(
     private veterinariaService: VeterinariaService,
