@@ -35,7 +35,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/sucursales/sucursales.component').then(m => m.SucursalesComponent),
     canActivate: [authGuard]
+  },
+  {
+    path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/dashboard',
+    loadChildren: () =>
+      import('./pages/sucursal-dashboard/sucursal-dashboard.routes').then(m => m.sucursalDashboardRoutes)
   }
+  
   
     
 ];

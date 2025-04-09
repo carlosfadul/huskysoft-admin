@@ -1,9 +1,6 @@
-/* You can add global styles to this file, and also import other style files */
-
-html, body { height: 100%; }
-
-body {
-    margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
+:host {
+    display: block;
+    height: 100vh;
     background-image: url('/assets/Fondo\ Huskyvet.png');
     background-size: cover;
     background-position: center;
