@@ -1,13 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClienteService } from '../../services/cliente.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-clientes',
   standalone: true,
-  imports: [CommonModule, MatTableModule],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatIconModule,
+    MatButtonModule
+  ],
   template: `
     <h2>Clientes de la Sucursal</h2>
 
@@ -28,6 +35,15 @@ import { MatTableModule } from '@angular/material/table';
         <td mat-cell *matCellDef="let c">{{ c.cliente_telefono }}</td>
       </ng-container>
 
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let c" style="border: 1px solid red">
+          <button mat-icon-button color="accent" (click)="verDetalleCliente(c.cliente_id)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
       <tr mat-header-row *matHeaderRowDef="columnas"></tr>
       <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
     </table>
@@ -37,15 +53,18 @@ import { MatTableModule } from '@angular/material/table';
 })
 export class ClientesComponent implements OnInit {
   clientes: any[] = [];
-  columnas: string[] = ['cliente_nombre', 'cliente_cedula', 'cliente_telefono'];
+  columnas: string[] = ['cliente_nombre', 'cliente_cedula', 'cliente_telefono', 'acciones'];
+  veterinariaId!: number;
   sucursalId!: number;
 
   constructor(
     private clienteService: ClienteService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit() {
+    this.veterinariaId = Number(this.route.snapshot.paramMap.get('veterinariaId'));
     this.sucursalId = Number(this.route.snapshot.paramMap.get('sucursalId'));
     this.obtenerClientes();
   }
@@ -56,5 +75,19 @@ export class ClientesComponent implements OnInit {
       error: err => console.error('Error al obtener clientes', err)
     });
   }
+
+  verDetalleCliente(clienteId: number) {
+    this.router.navigate([
+      '/veterinaria',
+      this.veterinariaId,
+      'sucursal',
+      this.sucursalId,
+      'dashboard',
+      'clientes',
+      clienteId,
+      'detalle'
+    ]);
+  }
 }
+
 

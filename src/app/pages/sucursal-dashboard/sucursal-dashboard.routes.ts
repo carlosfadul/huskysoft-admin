@@ -7,6 +7,11 @@ export const sucursalDashboardRoutes: Routes = [
     component: SucursalDashboardComponent,
     children: [
       {
+        path: 'clientes/:clienteId/detalle',
+        loadComponent: () =>
+          import('../cliente-detalle/cliente-detalle.component').then(m => m.ClienteDetalleComponent)
+      },
+      {
         path: 'clientes',
         loadComponent: () =>
           import('../../components/clientes/clientes.component').then(m => m.ClientesComponent)
@@ -24,3 +29,4 @@ export const sucursalDashboardRoutes: Routes = [
     ]
   }
 ];
+

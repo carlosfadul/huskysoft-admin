@@ -7,6 +7,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { ClienteFormComponent } from '../../components/cliente-form/cliente-form.component';
+import { Router } from '@angular/router';
+
+
+
 
 @Component({
   selector: 'app-clientes',
@@ -43,6 +47,9 @@ import { ClienteFormComponent } from '../../components/cliente-form/cliente-form
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let c">
+          <button mat-icon-button color="accent" (click)="verDetalleCliente(c.cliente_id)">
+            <mat-icon>visibility</mat-icon>
+          </button>
           <button mat-icon-button color="primary" (click)="abrirFormulario(c)">
             <mat-icon>edit</mat-icon>
           </button>
@@ -51,6 +58,7 @@ import { ClienteFormComponent } from '../../components/cliente-form/cliente-form
           </button>
         </td>
       </ng-container>
+
 
       <tr mat-header-row *matHeaderRowDef="columnas"></tr>
       <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
@@ -72,7 +80,8 @@ export class ClientesComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private clienteService: ClienteService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router // ✅ agrega esto
   ) {}
 
   ngOnInit() {
@@ -116,5 +125,25 @@ export class ClientesComponent implements OnInit {
       });
     }
   }
+
+  verDetalleCliente(clienteId: number) {
+    this.route.parent?.paramMap.subscribe(params => {
+      const veterinariaId = Number(params.get('veterinariaId'));
+      const sucursalId = Number(params.get('sucursalId'));
+  
+      this.router.navigate([
+        '/veterinaria',
+        veterinariaId,
+        'sucursal',
+        sucursalId,
+        'dashboard',
+        'clientes',
+        clienteId,
+        'detalle'
+      ]);
+    });
+  }
+  
+  
 }
 
