@@ -24,12 +24,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/veterinarias/veterinarias.component').then(m => m.VeterinariasComponent)
   },
+  /*
   {
     path: 'veterinaria/:id',
     loadComponent: () =>
       import('./pages/veterinaria-admin/veterinaria-admin.component').then(m => m.VeterinariaAdminComponent),
     canActivate: [authGuard]
-  },
+  },*/
   {
     path: 'veterinaria/:id/sucursales',
     loadComponent: () =>
@@ -40,8 +41,14 @@ export const routes: Routes = [
     path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/dashboard',
     loadChildren: () =>
       import('./pages/sucursal-dashboard/sucursal-dashboard.routes').then(m => m.sucursalDashboardRoutes)
+  },
+  
+  {
+    path: 'veterinaria/:veterinariaId/admin',
+    loadComponent: () => import('./pages/veterinaria-admin/veterinaria-admin.component')
+      .then(m => m.VeterinariaAdminComponent)
   }
   
-  
+    
     
 ];

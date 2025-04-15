@@ -1,13 +1,54 @@
-/* You can add global styles to this file, and also import other style files */
-
-html, body { height: 100%; }
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Roboto, sans-serif;
+}
 
 body {
-    margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
-    background-image: url('/assets/Fondo\ Huskyvet.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-  }
-  
+  background-image: url('assets/fondos/fondo-huskyvet.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Estilo general de paneles */
+.mat-card,
+.mat-table,
+.mat-toolbar,
+mat-sidenav-container,
+.mat-sidenav-content {
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+* {
+  box-shadow: none !important;
+}
+
+/* Formularios */
+.formulario-panel {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilo del contenedor del diálogo */
+.mat-dialog-container {
+  background-color: white !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* 🔥 Quitar el overlay gris que oscurece el fondo */
+::ng-deep .cdk-overlay-backdrop {
+  background: transparent !important;
+}
+
+/* Opcional: diálogos centrados más suaves */
+::ng-deep .cdk-overlay-pane {
+  backdrop-filter: none !important;
+}

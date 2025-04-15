@@ -47,11 +47,15 @@ import { MatButtonModule } from '@angular/material/button';
     .dashboard-container {
       height: 100vh;
     }
+  
     .sidenav {
       width: 250px;
     }
+  
     .dashboard-content {
       padding: 20px;
+      background-color: transparent; /* ❌ Antes era rgba(255,255,255,0.85) */
+      margin: 20px;
     }
   `]
 })
@@ -59,7 +63,7 @@ export class SucursalDashboardComponent implements OnInit {
   veterinariaId!: number;
   sucursalId!: number;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.veterinariaId = Number(this.route.snapshot.paramMap.get('veterinariaId'));

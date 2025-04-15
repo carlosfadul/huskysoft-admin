@@ -1,10 +1,13 @@
-:host {
-    display: block;
-    height: 100vh;
-    background-image: url('/assets/Fondo\ Huskyvet.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-  }
-  
+::ng-deep body,
+::ng-deep .mat-sidenav-content {
+  background-image: url('/assets/fondos/fondo-huskyvet.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  height: 100vh;
+}
+
+::ng-deep .mat-sidenav-content > * {
+  background-color: transparent !important;
+}

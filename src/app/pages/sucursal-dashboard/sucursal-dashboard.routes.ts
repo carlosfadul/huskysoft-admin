@@ -9,17 +9,17 @@ export const sucursalDashboardRoutes: Routes = [
       {
         path: 'clientes/:clienteId/detalle',
         loadComponent: () =>
-          import('../cliente-detalle/cliente-detalle.component').then(m => m.ClienteDetalleComponent)
+          import('../../components/cliente-detalle/cliente-detalle.component').then(m => m.ClienteDetalleComponent)
       },
       {
         path: 'clientes',
         loadComponent: () =>
-          import('../../components/clientes/clientes.component').then(m => m.ClientesComponent)
+          import('../clientes/clientes.component').then(m => m.ClientesComponent)
       },
       {
         path: 'mascotas',
         loadComponent: () =>
-          import('../../components/mascotas/mascotas.component').then(m => m.MascotasComponent)
+          import('../mascotas/mascotas.component').then(m => m.MascotasComponent)
       },
       {
         path: '',

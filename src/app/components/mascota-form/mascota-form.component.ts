@@ -24,6 +24,8 @@ import { MascotaService } from '../../services/mascota.service';
   ],
   template: `
     <h2 mat-dialog-title>{{ data?.mascota ? 'Editar' : 'Nueva' }} Mascota</h2>
+    <div class="formulario-panel">
+  
     <form [formGroup]="form" (ngSubmit)="guardar()" enctype="multipart/form-data">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Nombre</mat-label>
@@ -96,6 +98,7 @@ import { MascotaService } from '../../services/mascota.service';
         <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Guardar</button>
       </div>
     </form>
+    </div>
   `,
   styles: [`
     .full-width {

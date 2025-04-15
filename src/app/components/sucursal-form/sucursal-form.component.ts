@@ -1,5 +1,4 @@
 // src/app/components/sucursal-form/sucursal-form.component.ts
-
 import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -148,3 +147,4 @@ export class SucursalFormComponent {
     }
   }
 }
+
