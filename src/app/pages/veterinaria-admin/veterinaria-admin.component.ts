@@ -1,4 +1,4 @@
-//http://localhost:4200/veterinaria/admin
+//http://localhost:4200/veterinaria/26/admin
 // src/app/pages/veterinaria-admin/veterinaria-admin.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
