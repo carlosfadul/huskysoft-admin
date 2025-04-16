@@ -1,6 +1,6 @@
+
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
-
 
 export const routes: Routes = [
   {
@@ -24,13 +24,6 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/veterinarias/veterinarias.component').then(m => m.VeterinariasComponent)
   },
-  /*
-  {
-    path: 'veterinaria/:id',
-    loadComponent: () =>
-      import('./pages/veterinaria-admin/veterinaria-admin.component').then(m => m.VeterinariaAdminComponent),
-    canActivate: [authGuard]
-  },*/
   {
     path: 'veterinaria/:id/sucursales',
     loadComponent: () =>
@@ -42,13 +35,26 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./pages/sucursal-dashboard/sucursal-dashboard.routes').then(m => m.sucursalDashboardRoutes)
   },
-  
   {
     path: 'veterinaria/:veterinariaId/admin',
-    loadComponent: () => import('./pages/veterinaria-admin/veterinaria-admin.component')
-      .then(m => m.VeterinariaAdminComponent)
+    loadComponent: () =>
+      import('./pages/veterinaria-admin/veterinaria-admin.component').then(m => m.VeterinariaAdminComponent)
+  },
+  {
+    path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/dashboard/configuracion',
+    loadComponent: () =>
+      import('./pages/configuracion/configuracion.component').then(m => m.ConfiguracionComponent),
+    children: [
+      {
+        path: 'usuarios',
+        loadComponent: () =>
+          import('./pages/usuarios/usuarios.component').then(m => m.UsuariosComponent)
+      },
+      {
+        path: 'empleados',
+        loadComponent: () =>
+          import('./pages/empleados/empleados.component').then(m => m.EmpleadosComponent)
+      }
+    ]
   }
-  
-    
-    
 ];

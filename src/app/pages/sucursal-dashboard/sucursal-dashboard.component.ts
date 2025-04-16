@@ -1,4 +1,5 @@
 // src/app/pages/sucursal-dashboard/sucursal-dashboard.component.ts
+//http://localhost:4200/veterinaria/26/sucursal/20/dashboard/clientes
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
@@ -28,6 +29,7 @@ import { MatButtonModule } from '@angular/material/button';
         <mat-nav-list>
           <a mat-list-item [routerLink]="['clientes']">Clientes</a>
           <a mat-list-item [routerLink]="['mascotas']">Mascotas</a>
+          <a mat-list-item [routerLink]="['configuracion']">⚙️ Configuración</a> <!-- ← Nuevo botón -->
         </mat-nav-list>
       </mat-sidenav>
 
