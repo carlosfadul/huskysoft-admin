@@ -19,7 +19,7 @@ export class EmpleadoService {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
-  // Crear nuevo empleado (usa FormData por si hay foto)
+  // Crear nuevo empleado (usa FormData para manejar imágenes)
   crearEmpleado(data: FormData): Observable<any> {
     return this.http.post(this.apiUrl, data);
   }
@@ -33,4 +33,10 @@ export class EmpleadoService {
   eliminarEmpleado(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  // Obtener empleados de una sucursal que aún no tienen usuario asignado
+  getEmpleadosSinUsuarioPorSucursal(sucursalId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/sucursal/${sucursalId}/sin-usuario`);
+  }
 }
+

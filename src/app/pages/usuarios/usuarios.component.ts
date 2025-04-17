@@ -1,5 +1,5 @@
-// src/app/pages/usuarios/usuarios.component.ts
 // http://localhost:4200/veterinaria/26/sucursal/20/dashboard/configuracion/usuarios
+// src/app/pages/usuarios/usuarios.component.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UsuarioService } from '../../services/usuario.service';
@@ -22,14 +22,11 @@ import { UsuarioFormComponent } from './usuario-form.component';
   ],
   styleUrls: ['./usuarios.component.scss'],
   template: `
-    
-
     <h2>Usuarios</h2>
 
     <button mat-raised-button color="primary" (click)="abrirFormulario()">+ Nuevo Usuario</button>
 
     <table mat-table [dataSource]="usuarios" class="mat-elevation-z8">
-
       <ng-container matColumnDef="usuario_foto">
         <th mat-header-cell *matHeaderCellDef> Foto </th>
         <td mat-cell *matCellDef="let usuario">
@@ -73,14 +70,20 @@ export class UsuariosComponent implements OnInit {
   usuarios: any[] = [];
   columnas: string[] = ['usuario_foto', 'usuario_username', 'usuario_tipo', 'acciones'];
 
-
   veterinariaId!: string;
   sucursalId!: string;
 
   ngOnInit(): void {
-    this.veterinariaId = this.route.snapshot.paramMap.get('veterinariaId')!;
-    this.sucursalId = this.route.snapshot.paramMap.get('sucursalId')!;
-    this.cargarUsuarios();
+    // Obtenemos los parámetros desde el padre (nivel de ruta superior)
+    this.route.parent?.paramMap.subscribe(params => {
+      this.veterinariaId = params.get('veterinariaId')!;
+      this.sucursalId = params.get('sucursalId')!;
+
+      console.log('veterinariaId desde UsuariosComponent:', this.veterinariaId);
+      console.log('sucursalId desde UsuariosComponent:', this.sucursalId);
+
+      this.cargarUsuarios();
+    });
   }
 
   volver() {
@@ -94,18 +97,33 @@ export class UsuariosComponent implements OnInit {
   }
 
   cargarUsuarios() {
-    this.usuarioService.getUsuarios().subscribe(data => this.usuarios = data);
+    this.usuarioService.getUsuariosPorSucursal(Number(this.sucursalId))
+      .subscribe(data => {
+        this.usuarios = data;
+        console.log('👥 Usuarios cargados para sucursal', this.sucursalId, ':', data);
+      });
   }
+  
 
   abrirFormulario(usuario?: any) {
+    const data = usuario ? { ...usuario } : {};
+    data.sucursal_id = this.sucursalId;
+    data.veterinaria_id = this.veterinariaId;
+  
+    console.log('🟢 Enviando a dialog:', data);  // Asegúrate que este log muestre el usuario correcto
+  
     const dialogRef = this.dialog.open(UsuarioFormComponent, {
-      data: usuario,
+      data
     });
-
-    dialogRef.afterClosed().subscribe(resultado => {
-      if (resultado) this.cargarUsuarios();
+  
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) this.cargarUsuarios();
     });
   }
+  
+  
+  
+  
 
   eliminarUsuario(id: number) {
     if (confirm('¿Estás seguro de eliminar este usuario?')) {
@@ -113,4 +131,3 @@ export class UsuariosComponent implements OnInit {
     }
   }
 }
-

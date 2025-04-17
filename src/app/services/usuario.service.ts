@@ -1,3 +1,4 @@
+
 // src/app/services/usuario.service.ts
 
 import { Injectable, inject } from '@angular/core';
@@ -27,5 +28,9 @@ export class UsuarioService {
 
   eliminarUsuario(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  getUsuariosPorSucursal(sucursalId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/sucursal/${sucursalId}`);
   }
 }
