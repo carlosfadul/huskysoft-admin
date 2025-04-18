@@ -1,3 +1,4 @@
+// src/app/app.routes.ts
 
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
@@ -54,7 +55,15 @@ export const routes: Routes = [
         path: 'empleados',
         loadComponent: () =>
           import('./pages/empleados/empleados.component').then(m => m.EmpleadosComponent)
+      },
+      {
+        path: 'aliados',
+        loadComponent: () =>
+          import('./pages/aliados/aliados.component').then(m => m.AliadosComponent),
+        canActivate: [authGuard]
       }
     ]
   }
 ];
+
+

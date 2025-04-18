@@ -1,5 +1,4 @@
 // src/app/pages/usuarios/usuario-form.component.ts
-
 import {
   Component,
   Inject,
@@ -129,8 +128,6 @@ export class UsuarioFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('🟡 Datos recibidos en el diálogo:', this.data);
-
     const sucursalId = this.data?.sucursal_id;
     const veterinariaId = this.data?.veterinaria_id;
 
@@ -145,16 +142,13 @@ export class UsuarioFormComponent implements OnInit {
       ultimo_login: [this.data?.ultimo_login ? this.data.ultimo_login.substring(0, 16) : '']
     });
 
-    // Mostrar imagen actual
     if (this.data?.usuario_foto) {
       this.previewUrl = this.data.usuario_foto;
     }
 
-    // Cargar empleados de la sucursal (incluyendo el actual)
     if (sucursalId) {
       this.empleadoService.getEmpleadosSinUsuarioPorSucursal(sucursalId)
         .subscribe(emp => {
-          // Si está editando, aseguramos que el empleado actual esté en la lista
           if (this.data?.empleado_id) {
             const yaIncluido = emp.some((e: any) => e.empleado_id === this.data.empleado_id);
             if (!yaIncluido) {
@@ -189,15 +183,26 @@ export class UsuarioFormComponent implements OnInit {
         formData.append(key, this.form.value[key]);
       }
     }
-
+  
     if (this.selectedFile) {
       formData.append('usuario_foto', this.selectedFile);
     }
-
+  
     const request = this.data?.usuario_id
       ? this.usuarioService.actualizarUsuario(this.data.usuario_id, formData)
       : this.usuarioService.crearUsuario(formData);
-
-    request.subscribe(() => this.dialogRef.close(true));
+  
+    request.subscribe({
+      next: () => this.dialogRef.close(true),
+      error: (error) => {
+        console.error('❌ Error al guardar el usuario:', error);
+        if (error.status === 400 || error.status === 409) {
+          alert(error.error?.message || 'El nombre de usuario ya existe.');
+        } else {
+          alert('Ocurrió un error al guardar el usuario.');
+        }
+      }
+    });
   }
+  
 }
