@@ -1,5 +1,3 @@
-
-
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -19,13 +17,14 @@ import { inject } from '@angular/core';
       </div>
       <h2>Configuración de la Sucursal</h2>
       <div class="grid">
-        <button mat-raised-button color="primary" routerLink="usuarios">Usuarios</button>
-        <button mat-raised-button color="primary" routerLink="empleados">Empleados</button>
-        <button mat-raised-button color="primary" routerLink="aliados">Aliados</button>
-        <button mat-raised-button color="primary" routerLink="tratamientos">Tratamientos</button>
-        <button mat-raised-button color="primary" routerLink="enfermedades">Enfermedades</button>
-        <button mat-raised-button color="primary" routerLink="servicios">Servicios</button>
-        <button mat-raised-button color="primary" routerLink="proveedores">Proveedores</button>
+        <button mat-raised-button color="primary" [routerLink]="['usuarios']">Usuarios</button>
+        <button mat-raised-button color="primary" [routerLink]="['empleados']">Empleados</button>
+        <button mat-raised-button color="primary" [routerLink]="['aliados']">Aliados</button>
+        <button mat-raised-button color="primary" [routerLink]="['tratamientos']">Tratamientos</button>
+        <button mat-raised-button color="primary" [routerLink]="['enfermedades']">Enfermedades</button>
+        <button mat-raised-button color="primary" [routerLink]="['servicios']">Servicios</button>
+        <button mat-raised-button color="primary" [routerLink]="['proveedores']">Proveedores</button>
+        <button mat-raised-button color="primary" [routerLink]="['productos']">Productos</button> <!-- ✅ Nuevo botón -->
       </div>
     </mat-card>
     <router-outlet></router-outlet>
@@ -54,3 +53,6 @@ export class ConfiguracionComponent {
     ]);
   }
 }
+
+
+

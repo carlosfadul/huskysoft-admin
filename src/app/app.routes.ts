@@ -61,9 +61,35 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/aliados/aliados.component').then(m => m.AliadosComponent),
         canActivate: [authGuard]
+      },
+      {
+        path: 'tratamientos',
+        loadComponent: () =>
+          import('./pages/tratamientos/tratamientos.component').then(m => m.TratamientosComponent)
+      },
+      {
+        path: 'enfermedades',
+        loadComponent: () =>
+          import('./pages/enfermedades/enfermedades.component').then(m => m.EnfermedadesComponent)
+      },
+      {
+        path: 'servicios',
+        loadComponent: () =>
+          import('./pages/servicios/servicios.component').then(m => m.ServiciosComponent)
+      },
+      {
+        path: 'proveedores',
+        loadComponent: () =>
+          import('./pages/proveedores/proveedores.component').then(m => m.ProveedoresComponent)
+      },
+      {
+        path: 'productos',
+        loadComponent: () =>
+          import('./pages/productos/productos.component').then(m => m.ProductosComponent)
       }
     ]
   }
 ];
+
 
 

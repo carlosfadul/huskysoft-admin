@@ -1,5 +1,5 @@
 // src/app/pages/sucursal-dashboard/sucursal-dashboard.component.ts
-//http://localhost:4200/veterinaria/26/sucursal/20/dashboard/clientes
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
@@ -27,9 +27,22 @@ import { MatButtonModule } from '@angular/material/button';
       <mat-sidenav mode="side" opened class="sidenav">
         <mat-toolbar><b>Sucursal</b></mat-toolbar>
         <mat-nav-list>
-          <a mat-list-item [routerLink]="['clientes']">Clientes</a>
-          <a mat-list-item [routerLink]="['mascotas']">Mascotas</a>
-          <a mat-list-item [routerLink]="['configuracion']">⚙️ Configuración</a> <!-- ← Nuevo botón -->
+          <a mat-list-item [routerLink]="['clientes']">
+            <mat-icon>people</mat-icon>
+            <span>Clientes</span>
+          </a>
+          <a mat-list-item [routerLink]="['mascotas']">
+            <mat-icon>pets</mat-icon>
+            <span>Mascotas</span>
+          </a>
+          <a mat-list-item [routerLink]="['nomina']">
+            <mat-icon>payments</mat-icon>
+            <span>Nómina</span>
+          </a>
+          <a mat-list-item [routerLink]="['configuracion']">
+            <mat-icon>settings</mat-icon>
+            <span>Configuración</span>
+          </a>
         </mat-nav-list>
       </mat-sidenav>
 
@@ -58,6 +71,15 @@ import { MatButtonModule } from '@angular/material/button';
       background-color: rgba(255, 255, 255, 0.85);
       border-radius: 12px;
       padding: 20px;
+    }
+
+    mat-icon {
+      margin-right: 10px;
+    }
+
+    mat-list-item {
+      display: flex;
+      align-items: center;
     }
   `]
 })
