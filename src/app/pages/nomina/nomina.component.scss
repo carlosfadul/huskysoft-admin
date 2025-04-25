@@ -1,0 +1,21 @@
+.app-fondo {
+  background: url('/assets/fondos/fondo-huskyvet.png') center/cover fixed;
+  min-height: 100vh;
+  padding: 16px;
+}
+.app-contenido {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  padding: 24px;
+}
+.acciones {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+mat-card {
+  padding: 24px;
+}
+table {
+  width: 100%;
+}

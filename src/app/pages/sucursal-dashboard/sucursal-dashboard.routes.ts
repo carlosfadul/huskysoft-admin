@@ -25,6 +25,11 @@ export const sucursalDashboardRoutes: Routes = [
         path: '',
         redirectTo: 'clientes',
         pathMatch: 'full'
+      },
+      {
+        path: 'nomina',
+        loadComponent: () =>
+          import('../nomina/nomina.component').then(m => m.NominaComponent) // ✅ Nueva ruta
       }
     ]
   }
