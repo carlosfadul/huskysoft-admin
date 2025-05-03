@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 
 export interface Nomina {
   nomina_id?: number;
@@ -25,15 +26,25 @@ export class NominaService {
   }
 
   createNomina(data: Nomina): Observable<any> {
+    console.log('📤 Enviando al backend:', data);
     return this.http.post(this.baseUrl, data);
   }
+  
 
   updateNomina(id: number, data: Nomina): Observable<any> {
+    console.log('📤 Enviando al backend:', data);
     return this.http.put(`${this.baseUrl}/${id}`, data);
   }
 
   deleteNomina(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/${id}`);
+    console.log('📡 [Servicio] Enviando DELETE para nómina ID:', id);
+    return this.http.delete(`${this.baseUrl}/${id}`).pipe(
+      tap(() => console.log('✅ [Servicio] DELETE exitoso para ID:', id)),
+      catchError(err => {
+        console.error('❌ [Servicio] Error en DELETE:', err);
+        throw err;
+      })
+    );
   }
 
   getNominaById(id: number): Observable<Nomina> {

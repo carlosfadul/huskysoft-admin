@@ -1,4 +1,3 @@
-//
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SucursalDashboardComponent } from './sucursal-dashboard.component';

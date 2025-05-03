@@ -1,17 +1,24 @@
-.full-width {
-  width: 100%;
-  margin-bottom: 16px;
-}
-.half-width {
-  width: 48%;
-  margin-right: 4%;
-  margin-bottom: 16px;
-}
-.row {
+.formulario-nomina {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 300px;
+  padding: 16px;
 }
-.actions {
-  text-align: right;
-  margin-top: 24px;
+
+.fila {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.campo {
+  flex: 1 1 200px;
+}
+
+.botones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
 }

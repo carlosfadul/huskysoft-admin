@@ -19,8 +19,7 @@ import { EmpleadoFormComponent } from './empleado-form.component';
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
-    RouterModule,
-    EmpleadoFormComponent
+    RouterModule
   ],
   template: `
     <button mat-button class="white-button" (click)="volver()">← Volver</button>

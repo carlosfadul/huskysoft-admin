@@ -1,21 +1,20 @@
-.app-fondo {
-  background: url('/assets/fondos/fondo-huskyvet.png') center/cover fixed;
-  min-height: 100vh;
-  padding: 16px;
+.formulario-nomina {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
-.app-contenido {
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 12px;
-  padding: 24px;
+
+.fila {
+  display: flex;
+  gap: 16px;
 }
+
+.campo {
+  flex: 1;
+}
+
 .acciones {
   display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-mat-card {
-  padding: 24px;
-}
-table {
-  width: 100%;
+  justify-content: flex-end;
+  gap: 8px;
 }

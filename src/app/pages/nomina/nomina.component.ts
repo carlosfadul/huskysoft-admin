@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource, MatTable } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -25,17 +25,21 @@ import { NominaFormComponent } from '../../components/nomina-form/nomina-form.co
   styleUrls: ['./nomina.component.scss']
 })
 export class NominaComponent implements OnInit {
-  nominas: Nomina[] = [];
+  nominas: MatTableDataSource<Nomina> = new MatTableDataSource<Nomina>([]);
   columnas = [
     'nomina_fecha',
     'nomina_periodo_inicio',
     'nomina_periodo_fin',
     'nomina_estado',
+    'observaciones',
     'total_nomina',
     'acciones'
   ];
+
   sucursalId!: number;
   veterinariaId!: number;
+
+  @ViewChild(MatTable) tablaNominas!: MatTable<any>; // 👈 permite forzar renderizado
 
   constructor(
     private route: ActivatedRoute,
@@ -45,26 +49,27 @@ export class NominaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Nos suscribimos a los parámetros del padre para leer ids
     this.route.parent?.paramMap.subscribe(params => {
-      this.sucursalId    = Number(params.get('sucursalId'));
+      this.sucursalId = Number(params.get('sucursalId'));
       this.veterinariaId = Number(params.get('veterinariaId'));
-      this.cargarNominas();
+      this.obtenerNominas();
     });
   }
 
-  /** Carga todas las nóminas de esta sucursal */
-  cargarNominas(): void {
+  obtenerNominas(): void {
     if (!this.sucursalId) return;
-    this.nominaService.getNominasPorSucursal(this.sucursalId)
-      .subscribe({
-        next: (lista) => this.nominas = lista,
-        error: (e)    => console.error('Error al cargar nóminas', e)
-      });
+    console.log('📥 Consultando nóminas para sucursal:', this.sucursalId);
+    this.nominaService.getNominasPorSucursal(this.sucursalId).subscribe({
+      next: (data) => {
+        console.log('✅ Nóminas recibidas:', data);
+        this.nominas.data = data;
+        setTimeout(() => this.tablaNominas?.renderRows()); // 👈 asegura el renderizado
+      },
+      error: (err) => console.error('❌ Error al obtener nóminas:', err)
+    });
   }
 
-  /** Abre el diálogo de creación/edición */
-  nueva(nomina?: Nomina): void {
+  abrirFormulario(nomina?: Nomina): void {
     const ref = this.dialog.open(NominaFormComponent, {
       width: '600px',
       data: {
@@ -73,25 +78,30 @@ export class NominaComponent implements OnInit {
         usuario_id: 1
       }
     });
-    ref.afterClosed().subscribe(res => {
-      if (res === 'created' || res === 'updated') {
-        this.cargarNominas();
+
+    ref.afterClosed().subscribe(resultado => {
+      console.log('📤 Resultado del formulario:', resultado);
+      if (resultado === 'created' || resultado === 'updated') {
+        this.obtenerNominas();
       }
     });
   }
 
-  /** Elimina una nómina y refresca la lista */
-  borrar(id: number): void {
-    if (!confirm('¿Seguro de borrar esta nómina?')) return;
-    this.nominaService.deleteNomina(id)
-      .subscribe({
-        next: ()  => this.cargarNominas(),
-        error: (e) => console.error('Error al eliminar', e)
-      });
+  eliminarNomina(id: number): void {
+    if (!confirm('¿Estás seguro de eliminar esta nómina?')) return;
+    this.nominaService.deleteNomina(id).subscribe({
+      next: () => {
+        console.log('✅ Nómina eliminada correctamente');
+        this.obtenerNominas();
+      },
+      error: (err) => {
+        console.error('❌ Error al eliminar la nómina:', err);
+        alert('Hubo un error al intentar eliminar la nómina. Por favor, intenta de nuevo.');
+      }
+    });
   }
 
-  /** Navega a la vista detalle de la nómina */
-  detalle(nomina: Nomina): void {
+  verDetalleNomina(nomina: Nomina): void {
     this.router.navigate([
       '/veterinaria',
       this.veterinariaId,
@@ -104,13 +114,13 @@ export class NominaComponent implements OnInit {
     ]);
   }
 
-  /** Vuelve al listado de sucursales */
   volverASucursales(): void {
-    this.router.navigate([
-      '/veterinaria',
-      this.veterinariaId,
-      'sucursales'
-    ]);
+    this.router.navigate(['/veterinaria', this.veterinariaId, 'sucursales']);
+  }
+
+  trackByNominaId(index: number, item: Nomina): number {
+    return item.nomina_id!;
   }
 }
+
 
