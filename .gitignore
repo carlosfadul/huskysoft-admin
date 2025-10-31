@@ -1,23 +1,49 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
-
-# Compiled output
+# =========================
+# Angular / Node
+# =========================
 /dist
 /tmp
 /out-tsc
 /bazel-out
+/.angular/cache
 
-# Node
 /node_modules
-npm-debug.log
-yarn-error.log
+# Logs
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
 
-# IDEs and editors
+# TypeScript build info
+*.tsbuildinfo
+
+# Coverage / testing
+/coverage
+/.cache
+/libpeerconnection.log
+testem.log
+
+# =========================
+# Environments / Secrets (frontend suele no usarlos, por si acaso)
+# =========================
+.env
+.env.*.local
+
+# =========================
+# IDEs y editores
+# =========================
+# JetBrains / IntelliJ / WebStorm
 .idea/
+*.iml
+
+# Eclipse / otros
 .project
 .classpath
 .c9/
 *.launch
 .settings/
+
+# Sublime
 *.sublime-workspace
 
 # Visual Studio Code
@@ -26,17 +52,42 @@ yarn-error.log
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Fleet
+.fleet/
+
+# Historial de VSCode
 .history/*
 
-# Miscellaneous
-/.angular/cache
+# =========================
+# Misc
+# =========================
 .sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
+.connect.lock
 /typings
 
-# System files
+# Storybook
+/storybook-static
+
+# E2E - Cypress
+/cypress/screenshots
+/cypress/videos
+/cypress/downloads
+
+# E2E - Playwright
+/test-results
+/playwright-report
+/blob-report
+/.nyc_output
+
+# =========================
+# Sistemas operativos
+# =========================
 .DS_Store
 Thumbs.db
+
+# =========================
+# Servicios de deploy (opcional)
+# =========================
+.vercel
+.netlify
