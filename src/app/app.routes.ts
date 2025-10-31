@@ -3,6 +3,8 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
 
+
+
 export const routes: Routes = [
   {
     path: '',
@@ -88,7 +90,21 @@ export const routes: Routes = [
           import('./pages/productos/productos.component').then(m => m.ProductosComponent)
       }
     ]
+  },
+  {
+    path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/nomina/:nominaId/detalle',
+    loadComponent: () =>
+      import('./pages/nomina/detalle-nomina/detalle-nomina.component')
+        .then(m => m.DetalleNominaComponent)
+  },
+  {
+    path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/dashboard/nomina/:nominaId/detalle',
+    loadComponent: () =>
+      import('./pages/nomina/detalle-nomina/detalle-nomina.component')
+        .then(m => m.DetalleNominaComponent)
   }
+
+
 ];
 
 
