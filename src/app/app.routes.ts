@@ -1,111 +1,161 @@
 // src/app/app.routes.ts
-
 import { Routes } from '@angular/router';
-import { authGuard } from './auth/auth.guard';
 
-
+// ✅ Guards (versión standalone que te pasé)
+import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
+// (Opcional) Si usas lazy features con canMatch, crea también authMatchGuard:
+// import { authMatchGuard } from './core/guards/auth-match.guard';
 
 export const routes: Routes = [
-  {
-    path: '',
-    redirectTo: 'auth',
-    pathMatch: 'full'
-  },
+  // Raíz -> login/auth
+  { path: '', pathMatch: 'full', redirectTo: 'auth' },
+
+  // Auth (lazy). Dentro de este módulo tendrás /login, /register, etc.
   {
     path: 'auth',
-    loadChildren: () =>
-      import('./auth/auth.module').then(m => m.AuthModule)
+    loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule),
   },
+
+  // Dashboard principal (privado)
   {
     path: 'dashboard',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
-    canActivate: [authGuard]
   },
+
+  // Listado de Veterinarias (privado)
   {
     path: 'veterinarias',
+    canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/veterinarias/veterinarias.component').then(m => m.VeterinariasComponent)
+      import('./pages/veterinarias/veterinarias.component').then(m => m.VeterinariasComponent),
   },
+
+  // Sucursales por veterinaria (privado)
   {
     path: 'veterinaria/:id/sucursales',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/sucursales/sucursales.component').then(m => m.SucursalesComponent),
-    canActivate: [authGuard]
   },
+
+  // Dashboard operativo de sucursal (privado)
   {
     path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/dashboard',
+    // Si implementas canMatch, sustituye por: canMatch: [authMatchGuard],
+    canActivate: [authGuard],
     loadChildren: () =>
-      import('./pages/sucursal-dashboard/sucursal-dashboard.routes').then(m => m.sucursalDashboardRoutes)
+      import('./pages/sucursal-dashboard/sucursal-dashboard.routes').then(
+        m => m.sucursalDashboardRoutes
+      ),
   },
+
+  // Panel de administración de la veterinaria (roles sugeridos)
   {
     path: 'veterinaria/:veterinariaId/admin',
+    canActivate: [roleGuard],
+    data: { roles: ['superadmin', 'admin'] },
     loadComponent: () =>
-      import('./pages/veterinaria-admin/veterinaria-admin.component').then(m => m.VeterinariaAdminComponent)
+      import('./pages/veterinaria-admin/veterinaria-admin.component').then(
+        m => m.VeterinariaAdminComponent
+      ),
   },
+
+  // Configuración dentro del dashboard de sucursal (privado)
+  // Asegúrate de que ConfiguracionComponent tenga <router-outlet> para que los children se muestren.
   {
     path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/dashboard/configuracion',
+    canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/configuracion/configuracion.component').then(m => m.ConfiguracionComponent),
+      import('./pages/configuracion/configuracion.component').then(
+        m => m.ConfiguracionComponent
+      ),
     children: [
       {
         path: 'usuarios',
+        canActivate: [authGuard],
         loadComponent: () =>
-          import('./pages/usuarios/usuarios.component').then(m => m.UsuariosComponent)
+          import('./pages/usuarios/usuarios.component').then(m => m.UsuariosComponent),
       },
       {
         path: 'empleados',
+        canActivate: [authGuard],
         loadComponent: () =>
-          import('./pages/empleados/empleados.component').then(m => m.EmpleadosComponent)
+          import('./pages/empleados/empleados.component').then(m => m.EmpleadosComponent),
       },
       {
         path: 'aliados',
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./pages/aliados/aliados.component').then(m => m.AliadosComponent),
-        canActivate: [authGuard]
       },
       {
         path: 'tratamientos',
+        canActivate: [authGuard],
         loadComponent: () =>
-          import('./pages/tratamientos/tratamientos.component').then(m => m.TratamientosComponent)
+          import('./pages/tratamientos/tratamientos.component').then(
+            m => m.TratamientosComponent
+          ),
       },
       {
         path: 'enfermedades',
+        canActivate: [authGuard],
         loadComponent: () =>
-          import('./pages/enfermedades/enfermedades.component').then(m => m.EnfermedadesComponent)
+          import('./pages/enfermedades/enfermedades.component').then(
+            m => m.EnfermedadesComponent
+          ),
       },
       {
         path: 'servicios',
+        canActivate: [authGuard],
         loadComponent: () =>
-          import('./pages/servicios/servicios.component').then(m => m.ServiciosComponent)
+          import('./pages/servicios/servicios.component').then(m => m.ServiciosComponent),
       },
       {
         path: 'proveedores',
+        canActivate: [authGuard],
         loadComponent: () =>
-          import('./pages/proveedores/proveedores.component').then(m => m.ProveedoresComponent)
+          import('./pages/proveedores/proveedores.component').then(
+            m => m.ProveedoresComponent
+          ),
       },
       {
         path: 'productos',
+        canActivate: [authGuard],
         loadComponent: () =>
-          import('./pages/productos/productos.component').then(m => m.ProductosComponent)
-      }
-    ]
+          import('./pages/productos/productos.component').then(m => m.ProductosComponent),
+      },
+      // Ruta por defecto dentro de configuracion (opcional)
+      { path: '', pathMatch: 'full', redirectTo: 'usuarios' },
+    ],
   },
+
+  // Detalle de nómina (dos URLs equivalentes) — ambas privadas
   {
     path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/nomina/:nominaId/detalle',
+    canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/nomina/detalle-nomina/detalle-nomina.component')
-        .then(m => m.DetalleNominaComponent)
+      import('./pages/nomina/detalle-nomina/detalle-nomina.component').then(
+        m => m.DetalleNominaComponent
+      ),
   },
   {
     path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/dashboard/nomina/:nominaId/detalle',
+    canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/nomina/detalle-nomina/detalle-nomina.component')
-        .then(m => m.DetalleNominaComponent)
-  }
+      import('./pages/nomina/detalle-nomina/detalle-nomina.component').then(
+        m => m.DetalleNominaComponent
+      ),
+  },
 
+  // (Opcional) Página 403 si usas roleGuard
+  // {
+  //   path: 'forbidden',
+  //   loadComponent: () =>
+  //     import('./pages/errors/forbidden/forbidden.component').then(m => m.ForbiddenComponent),
+  // },
 
+  
 ];
-
-
-
