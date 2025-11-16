@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AuthService } from '../../services/auth.service'; // 👈 AQUÍ LA RUTA CORRECTA
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -35,12 +35,37 @@ export class LoginComponent {
     }
 
     this.loading = true;
-    const { username, password } = this.form.value;
+
+    // getRawValue para evitar null/undefined en username/password
+    const { username, password } = this.form.getRawValue() as {
+      username: string;
+      password: string;
+      remember: boolean;
+    };
 
     this.authService.login({ username, password }).subscribe({
-      next: () => {
+      next: (resp: any) => {
+        // 🔐 Guardar token si viene en la respuesta
+        if (resp && resp.token) {
+          localStorage.setItem('token', resp.token);
+        }
+
+        // 🎯 Intentar obtener el rol del usuario desde distintas posibles estructuras
+        const role =
+          resp?.usuario_tipo ??
+          resp?.usuario?.usuario_tipo ??
+          resp?.user?.role ??
+          resp?.role;
+
+        if (role) {
+          localStorage.setItem('role', role);
+        }
+
+        // Redirección (respeta parámetro redirect si viene en la URL)
         const redirect = this.route.snapshot.queryParamMap.get('redirect');
         this.router.navigateByUrl(redirect || '/dashboard');
+
+        this.loading = false;
       },
       error: (err) => {
         console.error('Error en login:', err);
@@ -49,9 +74,7 @@ export class LoginComponent {
           'Cerrar',
           { duration: 3000 }
         );
-      },
-      complete: () => {
-        this.loading = false;
+        this.loading = false; // 👈 Importante: liberar el botón en caso de error
       },
     });
   }
@@ -60,3 +83,4 @@ export class LoginComponent {
     this.hidePassword = !this.hidePassword;
   }
 }
+

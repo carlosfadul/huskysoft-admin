@@ -1,1 +1,101 @@
-<p>veterinarias works!</p>
+<!-- src/app/pages/veterinarias/veterinarias.component.html -->
+
+<h2>Veterinarias Registradas</h2>
+
+<div class="acciones">
+  <button mat-raised-button color="primary" (click)="abrirFormulario()">
+    + Nueva Veterinaria
+  </button>
+</div>
+
+<br>
+
+<table
+  mat-table
+  [dataSource]="veterinarias"
+  class="mat-elevation-z8"
+  *ngIf="veterinarias.data.length"
+>
+
+  <!-- Logo -->
+  <ng-container matColumnDef="veterinaria_logo">
+    <th mat-header-cell *matHeaderCellDef> Logo </th>
+    <td mat-cell *matCellDef="let v">
+      <img
+        *ngIf="v.veterinaria_logo"
+        [src]="'http://localhost:3000/api/veterinarias/' + v.veterinaria_id + '/logo'"
+        width="50"
+        height="50"
+        style="object-fit: cover;"
+      />
+    </td>
+  </ng-container>
+
+  <!-- Nombre -->
+  <ng-container matColumnDef="veterinaria_nombre">
+    <th mat-header-cell *matHeaderCellDef> Nombre </th>
+    <td mat-cell *matCellDef="let v"> {{ v.veterinaria_nombre }} </td>
+  </ng-container>
+
+  <!-- NIT -->
+  <ng-container matColumnDef="veterinaria_nit">
+    <th mat-header-cell *matHeaderCellDef> NIT </th>
+    <td mat-cell *matCellDef="let v"> {{ v.veterinaria_nit }} </td>
+  </ng-container>
+
+  <!-- Teléfono -->
+  <ng-container matColumnDef="veterinaria_telefono">
+    <th mat-header-cell *matHeaderCellDef> Teléfono </th>
+    <td mat-cell *matCellDef="let v"> {{ v.veterinaria_telefono }} </td>
+  </ng-container>
+
+  <!-- Estado -->
+  <ng-container matColumnDef="veterinaria_estado">
+    <th mat-header-cell *matHeaderCellDef> Estado </th>
+    <td mat-cell *matCellDef="let v"> {{ v.veterinaria_estado }} </td>
+  </ng-container>
+
+  <!-- Acciones -->
+  <ng-container matColumnDef="acciones">
+    <th mat-header-cell *matHeaderCellDef> Acciones </th>
+    <td mat-cell *matCellDef="let v">
+      <!-- 🔹 Abrir veterinaria -->
+      <button
+        mat-icon-button
+        color="accent"
+        type="button"
+        (click)="abrirVeterinaria(v)"
+      >
+        <mat-icon>open_in_new</mat-icon>
+      </button>
+
+      <!-- ✏ Editar -->
+      <button
+        mat-icon-button
+        color="primary"
+        type="button"
+        (click)="editarVeterinaria(v)"
+      >
+        <mat-icon>edit</mat-icon>
+      </button>
+
+      <!-- 🗑 Eliminar -->
+      <button
+        mat-icon-button
+        color="warn"
+        type="button"
+        (click)="eliminarVeterinaria(v.veterinaria_id)"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+  <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+</table>
+
+<p *ngIf="veterinarias.data.length === 0">
+  No hay veterinarias registradas.
+</p>
+

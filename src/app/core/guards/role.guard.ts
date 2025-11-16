@@ -1,38 +1,73 @@
 // src/app/core/guards/role.guard.ts
+
 import { inject } from '@angular/core';
-import { CanActivateFn, Router, ActivatedRouteSnapshot, UrlTree } from '@angular/router';
+import {
+  CanActivateFn,
+  Router,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot
+} from '@angular/router';
 
-const TOKEN_KEY = 'auth_token';
-
-function getRolesFromToken(): string[] {
-  try {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (!token) return [];
-    // Decodificar parte payload del JWT
-    const payload = JSON.parse(atob(token.split('.')[1] || ''));
-    const roles = payload?.roles || payload?.role || [];
-    return Array.isArray(roles) ? roles : [roles].filter(Boolean);
-  } catch {
-    return [];
-  }
-}
-
-export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
+export const roleGuard: CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
   const router = inject(Router);
-  const required: string[] = (route.data?.['roles'] as string[]) || [];
 
-  // si no requiere roles explícitos, solo verifica login
-  const token = localStorage.getItem(TOKEN_KEY);
-  if (!token) {
-    return router.createUrlTree(['/login'], {
-      queryParams: { redirect: location.pathname + location.search },
-    });
+  const requiredRoles = route.data['roles'] as string[] | undefined;
+
+  // 🔹 Leer el usuario desde localStorage
+  const usuarioStr = localStorage.getItem('usuario');
+  let userRole: string | null = null;
+
+  if (usuarioStr) {
+    try {
+      const usuario = JSON.parse(usuarioStr);
+      // Ajustamos a tus nombres reales: "tipo" = "superadmin" | "admin" | ...
+      userRole =
+        usuario.tipo ??
+        usuario.usuario_tipo ??
+        usuario.role ??
+        null;
+    } catch (e) {
+      console.error('Error parseando usuario de localStorage', e);
+    }
   }
 
-  if (!required.length) return true;
+  console.log(
+    'roleGuard -> requiredRoles:',
+    requiredRoles,
+    'userRole:',
+    userRole,
+    'rawUsuario:',
+    usuarioStr
+  );
 
-  const roles = getRolesFromToken();
-  const hasRole = required.some(r => roles.includes(r));
+  // Si no hay usuario en localStorage → ir al login
+  if (!usuarioStr) {
+    router.navigate(['/auth/login'], {
+      queryParams: { redirect: state.url }
+    });
+    return false;
+  }
 
-  return hasRole ? true : router.createUrlTree(['/forbidden']); // crea una página 403 si quieres
+  // Si no hay rol o no se pudo leer → acceso denegado
+  if (!userRole) {
+    router.navigate(['/forbidden']);
+    return false;
+  }
+
+  // Si la ruta no define roles, dejamos pasar
+  if (!requiredRoles || requiredRoles.length === 0) {
+    return true;
+  }
+
+  // Si el rol del usuario está dentro de los permitidos, OK ✅
+  if (requiredRoles.includes(userRole)) {
+    return true;
+  }
+
+  // Si el rol no está permitido → forbidden
+  router.navigate(['/forbidden']);
+  return false;
 };

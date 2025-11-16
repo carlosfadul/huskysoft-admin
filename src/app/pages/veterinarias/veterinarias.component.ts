@@ -1,89 +1,29 @@
-//http://localhost:4200/veterinarias
+// src/app/pages/veterinarias/veterinarias.component.ts
+// http://localhost:4200/veterinarias
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { VeterinariaService } from '../../services/veterinaria.service';
+import { Router, RouterModule } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+
+import { VeterinariaService } from '../../services/veterinaria.service';
 import { VeterinariaFormComponent } from '../../components/veterinaria-form/veterinaria-form.component';
-import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-veterinarias',
   standalone: true,
   imports: [
     CommonModule,
+    RouterModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatDialogModule,
-    RouterModule
+    MatDialogModule
   ],
-  template: `
-    <h2>Veterinarias Registradas</h2>
-
-    <div class="acciones">
-      <button mat-raised-button color="primary" (click)="abrirFormulario()">+ Nueva Veterinaria</button>
-    </div>
-    <br>
-
-    <table mat-table [dataSource]="veterinarias" class="mat-elevation-z8" *ngIf="veterinarias.data.length">
-
-      <!-- Logo -->
-      <ng-container matColumnDef="veterinaria_logo">
-        <th mat-header-cell *matHeaderCellDef> Logo </th>
-        <td mat-cell *matCellDef="let v">
-          <img [src]="'http://localhost:3000/api/veterinarias/' + v.veterinaria_id + '/logo'" width="50" height="50" style="object-fit: cover;" *ngIf="v.veterinaria_logo">
-        </td>
-      </ng-container>
-
-      <!-- Nombre -->
-      <ng-container matColumnDef="veterinaria_nombre">
-        <th mat-header-cell *matHeaderCellDef> Nombre </th>
-        <td mat-cell *matCellDef="let v"> {{ v.veterinaria_nombre }} </td>
-      </ng-container>
-
-      <!-- NIT -->
-      <ng-container matColumnDef="veterinaria_nit">
-        <th mat-header-cell *matHeaderCellDef> NIT </th>
-        <td mat-cell *matCellDef="let v"> {{ v.veterinaria_nit }} </td>
-      </ng-container>
-
-      <!-- Teléfono -->
-      <ng-container matColumnDef="veterinaria_telefono">
-        <th mat-header-cell *matHeaderCellDef> Teléfono </th>
-        <td mat-cell *matCellDef="let v"> {{ v.veterinaria_telefono }} </td>
-      </ng-container>
-
-      <!-- Estado -->
-      <ng-container matColumnDef="veterinaria_estado">
-        <th mat-header-cell *matHeaderCellDef> Estado </th>
-        <td mat-cell *matCellDef="let v"> {{ v.veterinaria_estado }} </td>
-      </ng-container>
-
-      <!-- Acciones -->
-      <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef> Acciones </th>
-        <td mat-cell *matCellDef="let v">
-          <button mat-icon-button color="accent" [routerLink]="['/veterinaria', v.veterinaria_id, 'admin']">
-            <mat-icon>open_in_new</mat-icon>
-          </button>
-          <button mat-icon-button color="primary" (click)="editarVeterinaria(v)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" (click)="eliminarVeterinaria(v.veterinaria_id)">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-      <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
-    </table>
-
-    <p *ngIf="veterinarias.data.length === 0">No hay veterinarias registradas.</p>
-  `
+  templateUrl: './veterinarias.component.html'
 })
 export class VeterinariasComponent implements OnInit {
   veterinarias = new MatTableDataSource<any>();
@@ -98,7 +38,8 @@ export class VeterinariasComponent implements OnInit {
 
   constructor(
     private veterinariaService: VeterinariaService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -115,6 +56,17 @@ export class VeterinariasComponent implements OnInit {
         console.error('Error al obtener veterinarias ❌', err);
       }
     });
+  }
+
+  // 🔹 Abrir panel / módulo principal de la veterinaria
+  abrirVeterinaria(veterinaria: any) {
+    console.log('Abriendo veterinaria', veterinaria.veterinaria_id);
+
+    // ⬇️ Ajusta esta ruta a lo que tengas definido en tu app
+    // Ejemplos:
+    // this.router.navigate(['/veterinaria', veterinaria.veterinaria_id, 'admin']);
+    // this.router.navigate(['/veterinaria', veterinaria.veterinaria_id, 'sucursales']);
+    this.router.navigate(['/veterinaria', veterinaria.veterinaria_id, 'admin']);
   }
 
   editarVeterinaria(veterinaria: any) {
