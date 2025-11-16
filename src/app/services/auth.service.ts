@@ -1,33 +1,33 @@
 // src/app/services/auth.service.ts
+
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { tap } from 'rxjs/operators';
 
-@Injectable({
-  providedIn: 'root'
-})
+export interface LoginDto { username: string; password: string; }
+export interface LoginRes { token: string; /* opcional: user, roles, etc. */ }
+
+const TOKEN_KEY = 'auth_token';
+
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private baseUrl = 'http://localhost:3000/api/auth'; // Ajusta según tu puerto/backend
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
-
-  login(credentials: { username: string; password: string }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/login`, credentials);
+  login(data: LoginDto) {
+    return this.http.post<LoginRes>(`${environment.apiUrl}/auth/login`, data)
+      .pipe(
+        tap(res => {
+          localStorage.setItem(TOKEN_KEY, res.token);
+        })
+      );
   }
 
   logout() {
-    localStorage.removeItem('token');
+    localStorage.removeItem(TOKEN_KEY);
   }
 
-  guardarToken(token: string) {
-    localStorage.setItem('token', token);
-  }
-
-  obtenerToken() {
-    return localStorage.getItem('token');
-  }
-
-  estaAutenticado(): boolean {
-    return !!localStorage.getItem('token');
+  get token(): string | null {
+    try { return localStorage.getItem(TOKEN_KEY); } catch { return null; }
   }
 }
