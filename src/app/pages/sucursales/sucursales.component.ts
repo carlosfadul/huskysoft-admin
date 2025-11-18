@@ -1,156 +1,140 @@
-
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SucursalService } from '../../services/sucursal.service';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
-import { MatDialog } from '@angular/material/dialog';
-import { SucursalFormComponent } from '../../components/sucursal-form/sucursal-form.component';
-import { MatButtonModule } from '@angular/material/button';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableDataSource } from '@angular/material/table';
+import { SucursalService } from '../../services/sucursal.service';
+import { SucursalFormComponent } from '../../components/sucursal-form/sucursal-form.component';
 
 @Component({
   selector: 'app-sucursales',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule],
-  template: `
-    <button mat-button color="accent" (click)="volverAlPanel()">
-      ⬅ Volver al Panel de Veterinaria
-    </button>
-
-    <div class="acciones">
-      <button mat-raised-button color="primary" (click)="abrirFormulario()">+ Nueva Sucursal</button>
-    </div>
-
-    <h2>Sucursales de la Veterinaria</h2>
-
-    <table mat-table [dataSource]="sucursales" class="mat-elevation-z8" *ngIf="sucursales.length">
-
-      <!-- Columna: Logo -->
-      <ng-container matColumnDef="logo">
-        <th mat-header-cell *matHeaderCellDef> Logo </th>
-        <td mat-cell *matCellDef="let s">
-          <img [src]="'http://localhost:3000/api/sucursales/' + s.sucursal_id + '/logo'" 
-              alt="Logo" 
-              width="50" 
-              height="50"
-              style="object-fit: cover; border-radius: 8px;" />
-        </td>
-      </ng-container>
-
-
-
-      <!-- Nombre -->
-      <ng-container matColumnDef="sucursal_nombre">
-        <th mat-header-cell *matHeaderCellDef>Nombre</th>
-        <td mat-cell *matCellDef="let s">{{ s.sucursal_nombre }}</td>
-      </ng-container>
-
-      <!-- NIT -->
-      <ng-container matColumnDef="sucursal_nit">
-        <th mat-header-cell *matHeaderCellDef>NIT</th>
-        <td mat-cell *matCellDef="let s">{{ s.sucursal_nit }}</td>
-      </ng-container>
-
-      <!-- Dirección -->
-      <ng-container matColumnDef="sucursal_direccion">
-        <th mat-header-cell *matHeaderCellDef>Dirección</th>
-        <td mat-cell *matCellDef="let s">{{ s.sucursal_direccion }}</td>
-      </ng-container>
-
-      <!-- Teléfono -->
-      <ng-container matColumnDef="sucursal_telefono">
-        <th mat-header-cell *matHeaderCellDef>Teléfono</th>
-        <td mat-cell *matCellDef="let s">{{ s.sucursal_telefono }}</td>
-      </ng-container>
-
-      <!-- Estado -->
-      <ng-container matColumnDef="sucursal_estado">
-        <th mat-header-cell *matHeaderCellDef>Estado</th>
-        <td mat-cell *matCellDef="let s">{{ s.sucursal_estado }}</td>
-      </ng-container>
-
-      <!-- Acciones -->
-      <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef> Acciones </th>
-        <td mat-cell *matCellDef="let s">
-          <button mat-icon-button color="primary" (click)="abrirFormulario(s)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" (click)="eliminarSucursal(s.sucursal_id)">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-
-
-      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-      <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
-    </table>
-
-    <p *ngIf="sucursales.length === 0">No hay sucursales registradas.</p>
-  `,
-  styles: [`
-    .acciones {
-      margin: 15px 0;
-    }
-  `]
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    MatDialogModule,
+    MatCardModule,
+    SucursalFormComponent
+  ],
+  templateUrl: './sucursales.component.html',
+  styleUrls: ['./sucursales.component.scss']
 })
-export class SucursalesComponent implements OnInit {
-  sucursales: any[] = [];
-  columnas: string[] = [
-    'logo', 'sucursal_nombre', 'sucursal_nit', 'sucursal_direccion', 'sucursal_telefono', 'sucursal_estado', 'acciones'
+export class SucursalesComponent implements OnInit, AfterViewInit {
+  displayedColumns: string[] = [
+    'sucursal_logo',
+    'sucursal_nombre',
+    'sucursal_nit',
+    'sucursal_direccion',
+    'sucursal_telefono',
+    'sucursal_estado',
+    'acciones'
   ];
   
+  dataSource = new MatTableDataSource<any>([]);
   veterinariaId!: number;
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
     private sucursalService: SucursalService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
-  ngOnInit() {
-    this.veterinariaId = Number(this.route.snapshot.paramMap.get('id'));
-    this.obtenerSucursales();
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
-  volverAlPanel() {
-    this.router.navigate([`/veterinaria/${this.veterinariaId}`]);
-  }
-
-  obtenerSucursales() {
-    this.sucursalService.getSucursalesPorVeterinaria(this.veterinariaId).subscribe({
-      next: (res: any) => this.sucursales = res,
-      error: err => console.error('Error al obtener sucursales', err)
+  ngOnInit(): void {
+    this.route.paramMap.subscribe(params => {
+      this.veterinariaId = Number(params.get('veterinariaId'));
+      this.obtenerSucursales();
     });
   }
 
-  abrirFormulario(sucursal: any = null) {
+  obtenerSucursales(): void {
+    if (!this.veterinariaId) return;
+
+    this.sucursalService.getSucursalesPorVeterinaria(this.veterinariaId)
+      .subscribe({
+        next: (res: any) => {
+          this.dataSource.data = res || [];
+        },
+        error: err => {
+          console.error('Error al obtener sucursales', err);
+        }
+      });
+  }
+
+  nuevaSucursal(): void {
     const dialogRef = this.dialog.open(SucursalFormComponent, {
-      width: '400px',
-      data: { sucursal, veterinaria_id: this.veterinariaId }
+      width: '600px',
+      data: { veterinariaId: this.veterinariaId }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result === 'updated' || result === 'created') {
+      if (result === 'created') {
         this.obtenerSucursales();
       }
     });
   }
 
-  eliminarSucursal(id: number) {
-    const confirmado = confirm('¿Estás seguro de eliminar esta sucursal?');
-    if (confirmado) {
-      this.sucursalService.deleteSucursal(id).subscribe(() => {
-        this.obtenerSucursales(); // 🔁 Refrescar después de eliminar
-      });
-    }
-  }
-   
+  editarSucursal(sucursal: any): void {
+    const dialogRef = this.dialog.open(SucursalFormComponent, {
+      width: '600px',
+      data: { 
+        sucursal: sucursal,
+        veterinariaId: this.veterinariaId
+      }
+    });
 
-  getLogoUrl(id: number): string {
-    return `http://localhost:3000/api/sucursales/${id}/logo`;
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'updated') {
+        this.obtenerSucursales();
+      }
+    });
+  }
+
+  eliminarSucursal(sucursal: any): void {
+    const confirmado = confirm(`¿Estás seguro de eliminar la sucursal ${sucursal.sucursal_nombre}?`);
+    if (!confirmado) return;
+
+    this.sucursalService.deleteSucursal(sucursal.sucursal_id).subscribe({
+      next: () => this.obtenerSucursales(),
+      error: err => console.error('Error al eliminar sucursal', err)
+    });
+  }
+
+  volverAlPanelVeterinaria(): void {
+    this.router.navigate(['/veterinarias']);
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 }

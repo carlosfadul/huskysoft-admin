@@ -2,8 +2,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -22,41 +21,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatIconModule,
     MatButtonModule
   ],
-  template: `
-    <mat-sidenav-container class="dashboard-container">
-      <mat-sidenav mode="side" opened class="sidenav">
-        <mat-toolbar><b>Sucursal</b></mat-toolbar>
-        <mat-nav-list>
-          <a mat-list-item [routerLink]="['clientes']">
-            <mat-icon>people</mat-icon>
-            <span>Clientes</span>
-          </a>
-          <a mat-list-item [routerLink]="['mascotas']">
-            <mat-icon>pets</mat-icon>
-            <span>Mascotas</span>
-          </a>
-          <a mat-list-item [routerLink]="['nomina']">
-            <mat-icon>payments</mat-icon>
-            <span>Nómina</span>
-          </a>
-          <a mat-list-item [routerLink]="['configuracion']">
-            <mat-icon>settings</mat-icon>
-            <span>Configuración</span>
-          </a>
-        </mat-nav-list>
-      </mat-sidenav>
-
-      <mat-sidenav-content>
-        <div class="app-contenido">
-          <mat-toolbar color="primary">
-            <b>Panel de Sucursal</b>
-          </mat-toolbar>
-
-          <router-outlet></router-outlet>
-        </div>
-      </mat-sidenav-content>
-    </mat-sidenav-container>
-  `,
+  templateUrl: './sucursal-dashboard.component.html',
   styles: [`
     .dashboard-container {
       height: 100vh;
@@ -80,6 +45,11 @@ import { MatButtonModule } from '@angular/material/button';
     mat-list-item {
       display: flex;
       align-items: center;
+    }
+
+    .active-link {
+      background: rgba(0, 0, 0, 0.06);
+      font-weight: 600;
     }
   `]
 })

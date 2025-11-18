@@ -12,8 +12,8 @@ export class SucursalService {
   constructor(private http: HttpClient) {}
 
   // Obtener todas las sucursales de una veterinaria
-  getSucursalesPorVeterinaria(veterinariaId: number) {
-    return this.http.get(`http://localhost:3000/api/sucursales?veterinaria_id=${veterinariaId}`);
+  getSucursalesPorVeterinaria(veterinariaId: number): Observable<any[]> {
+    return this.http.get<any[]>(`http://localhost:3000/api/sucursales?veterinaria_id=${veterinariaId}`);
   }
   
 

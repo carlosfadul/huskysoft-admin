@@ -33,15 +33,16 @@ export const routes: Routes = [
         .then(m => m.VeterinariasComponent),
   },
 
-  // --- PANEL PRINCIPAL DE UNA VETERINARIA (FUNCIONALIDAD QUE AHORA QUERÍAS)
   {
-    path: 'veterinaria/:veterinariaId/admin',
-    canActivate: [roleGuard],   // <<--- Protegido por roles
-    data: { roles: ['superadmin', 'admin'] },
-    loadComponent: () =>
-      import('./pages/veterinaria-admin/veterinaria-admin.component')
-        .then(m => m.VeterinariaAdminComponent),
-  },
+  path: 'veterinaria/:veterinariaId/admin',
+  canActivate: [roleGuard],
+  data: { roles: ['superadmin', 'admin'] },
+  loadComponent: () =>
+    import('./pages/veterinaria-admin/veterinaria-admin.component').then(
+      m => m.VeterinariaAdminComponent
+    ),
+},
+
 
   // Sucursales por veterinaria
   {

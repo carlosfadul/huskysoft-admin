@@ -115,8 +115,13 @@ export class NominaComponent implements OnInit {
   }
 
   volverASucursales(): void {
-    this.router.navigate(['/veterinaria', this.veterinariaId, 'sucursales']);
-  }
+  this.router.navigate([
+    '/veterinaria',
+    this.veterinariaId,
+    'admin'
+  ]);
+}
+
 
   trackByNominaId(index: number, item: Nomina): number {
     return item.nomina_id!;

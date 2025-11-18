@@ -1,12 +1,38 @@
 // src/app/core/guards/role.guard.ts
-
 import { inject } from '@angular/core';
 import {
   CanActivateFn,
   Router,
   ActivatedRouteSnapshot,
-  RouterStateSnapshot
+  RouterStateSnapshot,
 } from '@angular/router';
+
+function decodeToken(token: string): any | null {
+  try {
+    const payloadBase64 = token.split('.')[1];
+    const json = atob(payloadBase64);
+    return JSON.parse(json);
+  } catch (e) {
+    console.error('Error decodificando token JWT', e);
+    return null;
+  }
+}
+
+// 🔎 Función helper: intenta sacar el rol del objeto usuario
+function getRoleFromUsuario(u: any): string | null {
+  if (!u) return null;
+
+  // Probamos varios nombres posibles de campo
+  return (
+    u.tipo ??            // ej: "superadmin"
+    u.usuario_tipo ??    // coincide con tu columna de BD
+    u.tipo_usuario ??    // variante
+    u.rol ??             // ej: "admin"
+    u.role ??            // ej: "admin"
+    u.userRole ??        // otra variante
+    null
+  );
+}
 
 export const roleGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
@@ -14,60 +40,67 @@ export const roleGuard: CanActivateFn = (
 ) => {
   const router = inject(Router);
 
-  const requiredRoles = route.data['roles'] as string[] | undefined;
+  const requiredRoles = (route.data['roles'] as string[]) || [];
 
-  // 🔹 Leer el usuario desde localStorage
-  const usuarioStr = localStorage.getItem('usuario');
+  let usuario: any = null;
   let userRole: string | null = null;
 
-  if (usuarioStr) {
+  // 1️⃣ Intentamos leer usuario desde localStorage
+  const rawUsuario = localStorage.getItem('usuario');
+  if (rawUsuario) {
     try {
-      const usuario = JSON.parse(usuarioStr);
-      // Ajustamos a tus nombres reales: "tipo" = "superadmin" | "admin" | ...
-      userRole =
-        usuario.tipo ??
-        usuario.usuario_tipo ??
-        usuario.role ??
-        null;
+      usuario = JSON.parse(rawUsuario);
+      userRole = getRoleFromUsuario(usuario);
     } catch (e) {
       console.error('Error parseando usuario de localStorage', e);
     }
   }
 
+  // 2️⃣ Si no hay rol aún, intentamos sacarlo del token
+  if (!userRole) {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const payload = decodeToken(token);
+      if (payload) {
+        usuario = payload;
+        userRole = getRoleFromUsuario(payload);
+      }
+    }
+  }
+
+  // Logs de ayuda
+  console.log('RAW USUARIO COMPLETO ====>', usuario);
   console.log(
     'roleGuard -> requiredRoles:',
     requiredRoles,
     'userRole:',
     userRole,
     'rawUsuario:',
-    usuarioStr
+    usuario
   );
 
-  // Si no hay usuario en localStorage → ir al login
-  if (!usuarioStr) {
-    router.navigate(['/auth/login'], {
-      queryParams: { redirect: state.url }
-    });
-    return false;
-  }
-
-  // Si no hay rol o no se pudo leer → acceso denegado
-  if (!userRole) {
-    router.navigate(['/forbidden']);
-    return false;
-  }
-
   // Si la ruta no define roles, dejamos pasar
-  if (!requiredRoles || requiredRoles.length === 0) {
+  if (!requiredRoles.length) {
     return true;
   }
 
-  // Si el rol del usuario está dentro de los permitidos, OK ✅
+  // Si no hay usuario/rol → bloqueamos
+  if (!userRole) {
+    router.navigate(['/forbidden'], { queryParams: { redirect: state.url } });
+    return false;
+  }
+
+  // Superadmin entra a todo
+  if (userRole === 'superadmin') {
+    return true;
+  }
+
+  // Si el rol del usuario está permitido, pasa
   if (requiredRoles.includes(userRole)) {
     return true;
   }
 
-  // Si el rol no está permitido → forbidden
-  router.navigate(['/forbidden']);
+  // Caso contrario → acceso denegado
+  router.navigate(['/forbidden'], { queryParams: { redirect: state.url } });
   return false;
 };
