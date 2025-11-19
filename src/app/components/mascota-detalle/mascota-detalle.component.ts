@@ -1,49 +1,95 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-mascota-detalle',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatButtonModule
+  ],
   template: `
     <div class="detalle-panel">
-      <h3>Detalles de la Mascota</h3>
-      <p><strong>Nombre:</strong> {{ data.mascota_nombre }}</p>
-      <p><strong>Especie:</strong> {{ data.mascota_especie }}</p>
-      <p><strong>Raza:</strong> {{ data.mascota_raza }}</p>
-      <p><strong>Sexo:</strong> {{ data.mascota_sexo }}</p>
-      <p><strong>Nacimiento:</strong> {{ data.mascota_fecha_nac | date }}</p>
-      <p><strong>Color:</strong> {{ data.mascota_color }}</p>
-      <p><strong>Peso:</strong> {{ data.mascota_peso }} kg</p>
-      <p><strong>Estado:</strong> {{ data.mascota_estado }}</p>
-      <p><strong>Dueño:</strong> {{ data.cliente_nombre }} {{ data.cliente_apellido }} ({{ data.cliente_cedula }})</p>
+      <h3 class="titulo">Detalles de la Mascota</h3>
 
-      <img *ngIf="data.mascota_foto"
-           [src]="'http://localhost:3000/api/mascotas/' + data.mascota_id + '/foto'"
-           width="150" height="150"
-           style="object-fit: cover; border-radius: 8px; margin-top: 10px;">
+      <div class="info">
+        <p><strong>Nombre:</strong> {{ data?.mascota_nombre }}</p>
+        <p><strong>Especie:</strong> {{ data?.mascota_especie }}</p>
+        <p><strong>Raza:</strong> {{ data?.mascota_raza || 'Sin raza' }}</p>
+        <p><strong>Sexo:</strong> {{ data?.mascota_sexo }}</p>
+        <p><strong>Fecha de nacimiento:</strong> {{ data?.mascota_fecha_nac | date }}</p>
+        <p><strong>Color:</strong> {{ data?.mascota_color }}</p>
+        <p><strong>Peso:</strong> {{ data?.mascota_peso }} kg</p>
+        <p><strong>Estado:</strong> {{ data?.mascota_estado }}</p>
 
-      <div style="margin-top: 20px; text-align: center;">
-        <button mat-stroked-button color="primary" (click)="dialogRef.close()">Cerrar</button>
+        <p><strong>Dueño:</strong> 
+          {{ data?.cliente_nombre }} {{ data?.cliente_apellido }}
+          ({{ data?.cliente_cedula }})
+        </p>
+      </div>
+
+      <div class="foto" *ngIf="data?.mascota_foto">
+        <img 
+          [src]="'http://localhost:3000/api/mascotas/' + data?.mascota_id + '/foto'"
+          alt="Foto de mascota"
+          class="foto-mascota"
+        >
+      </div>
+
+      <div class="acciones">
+        <button mat-stroked-button color="primary" (click)="cerrar()">Cerrar</button>
       </div>
     </div>
   `,
   styles: [`
     .detalle-panel {
-      background-color: white;
+      background: #ffffff;
       padding: 24px;
       border-radius: 12px;
       max-width: 420px;
       margin: auto;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+      text-align: center;
+    }
+
+    .titulo {
+      margin-bottom: 16px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .info p {
+      margin: 6px 0;
+      text-align: left;
+    }
+
+    .foto {
+      margin: 15px 0;
+    }
+
+    .foto-mascota {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 3px solid #ddd;
+    }
+
+    .acciones {
+      margin-top: 20px;
     }
   `]
 })
 export class MascotaDetalleComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-    public dialogRef: MatDialogRef<MascotaDetalleComponent>
+    private dialogRef: MatDialogRef<MascotaDetalleComponent>
   ) {}
+
+  cerrar() {
+    this.dialogRef.close();
+  }
 }

@@ -1,0 +1,15 @@
+/* src/app/components/atencion-form/atencion-form.component.scss */
+.form-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+}
+
+.full {
+  width: 100%;
+}

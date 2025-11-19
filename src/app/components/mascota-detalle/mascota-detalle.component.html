@@ -1,1 +1,151 @@
-<p>mascota-detalle works!</p>
+<div class="app-fondo">
+  <div class="app-contenido">
+
+    <!-- Cabecera / info de la mascota -->
+    <button mat-stroked-button (click)="volver()">← Volver a Mascotas</button>
+
+    <mat-card *ngIf="mascota" class="info-mascota">
+      <div class="info-header">
+        <div>
+          <h2>{{ mascota.mascota_nombre }}</h2>
+          <p>
+            {{ mascota.mascota_especie }} •
+            {{ mascota.mascota_raza || 'Sin raza' }} •
+            {{ mascota.mascota_sexo }}
+          </p>
+          <p>
+            Dueño:
+            {{ mascota.cliente_nombre }} {{ mascota.cliente_apellido }}
+            ({{ mascota.cliente_cedula }})
+          </p>
+        </div>
+
+        <img
+          *ngIf="mascota.mascota_foto"
+          [src]="'http://localhost:3000/api/mascotas/' + mascota.mascota_id + '/foto'"
+          width="100" height="100"
+          style="object-fit: cover; border-radius: 8px"
+        />
+      </div>
+    </mat-card>
+
+    <!-- Atenciones / Consultas -->
+    <mat-card class="card-atenciones">
+      <div class="titulo-acciones">
+        <h3>Atenciones / Consultas</h3>
+        <button mat-flat-button color="primary" (click)="nuevaAtencion()">
+          + Nueva Atención
+        </button>
+      </div>
+
+      <table
+        mat-table
+        [dataSource]="atenciones"
+        class="mat-elevation-z8"
+        *ngIf="atenciones.length"
+      >
+        <!-- FECHA -->
+        <ng-container matColumnDef="fecha">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let a">
+            {{ (a.fecha_atencion || a.atencion_fecha) | date: 'shortDate' }}
+          </td>
+        </ng-container>
+
+        <!-- MOTIVO -->
+        <ng-container matColumnDef="motivo">
+          <th mat-header-cell *matHeaderCellDef>Motivo</th>
+          <td mat-cell *matCellDef="let a">{{ a.motivo || a.motivo_consulta }}</td>
+        </ng-container>
+
+        <!-- DIAGNOSTICO -->
+        <ng-container matColumnDef="diagnostico">
+          <th mat-header-cell *matHeaderCellDef>Diagnóstico</th>
+          <td mat-cell *matCellDef="let a">{{ a.diagnostico }}</td>
+        </ng-container>
+
+        <!-- ACCIONES -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let a">
+            <button mat-icon-button color="primary" (click)="editarAtencion(a)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="eliminarAtencion(a)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnasAtenciones"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnasAtenciones"></tr>
+      </table>
+
+      <p *ngIf="atenciones.length === 0">
+        Todavía no hay atenciones registradas.
+      </p>
+    </mat-card>
+
+    <!-- 💉 Vacunas aplicadas -->
+    <mat-card class="card-atenciones">
+      <div class="titulo-acciones">
+        <h3>Vacunas Aplicadas</h3>
+        <button mat-flat-button color="primary" (click)="nuevaVacuna()">
+          + Aplicar Vacuna
+        </button>
+      </div>
+
+      <table
+        mat-table
+        [dataSource]="vacunasAplicadas"
+        class="mat-elevation-z8"
+        *ngIf="vacunasAplicadas.length"
+      >
+        <!-- FECHA -->
+        <ng-container matColumnDef="fecha">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let v">
+            {{ v.fecha_aplicacion | date: 'shortDate' }}
+          </td>
+        </ng-container>
+
+        <!-- VACUNA -->
+        <ng-container matColumnDef="vacuna">
+          <th mat-header-cell *matHeaderCellDef>Vacuna</th>
+          <td mat-cell *matCellDef="let v">
+            {{ v.vacuna_nombre }}
+          </td>
+        </ng-container>
+
+        <!-- LOTE -->
+        <ng-container matColumnDef="lote">
+          <th mat-header-cell *matHeaderCellDef>Lote</th>
+          <td mat-cell *matCellDef="let v">
+            {{ v.lote }}
+          </td>
+        </ng-container>
+
+        <!-- ACCIONES -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let v">
+            <button mat-icon-button color="primary" (click)="editarVacuna(v)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="eliminarVacuna(v)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnasVacunas"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnasVacunas"></tr>
+      </table>
+
+      <p *ngIf="vacunasAplicadas.length === 0">
+        Esta mascota aún no tiene vacunas registradas.
+      </p>
+    </mat-card>
+
+  </div>
+</div>

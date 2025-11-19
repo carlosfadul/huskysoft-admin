@@ -153,6 +153,21 @@ export const routes: Routes = [
       import('./pages/errors/forbidden/forbidden.component')
         .then(m => m.ForbiddenComponent),
   },
+  {
+  path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/dashboard/mascotas/:mascotaId/detalle',
+  loadComponent: () =>
+    import('./pages/mascotas/mascota-detalle/mascota-detalle.component')
+      .then(m => m.MascotaDetalleComponent)
+},
+
+{
+  path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/dashboard/mascotas/:mascotaId/detalle',
+  loadComponent: () =>
+    import('./pages/mascotas/mascota-detalle/mascota-detalle.component')
+      .then(m => m.MascotaDetalleComponent)
+},
+
+
 
   // Wildcard
   { path: '**', redirectTo: 'forbidden' }

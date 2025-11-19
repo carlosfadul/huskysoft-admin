@@ -1,0 +1,60 @@
+<!-- src/app/components/atencion-form/atencion-form.component.html -->
+<h2 mat-dialog-title>Nueva Atención / Consulta</h2>
+
+<div mat-dialog-content [formGroup]="form" class="form-contenedor">
+
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>Servicio</mat-label>
+    <mat-select formControlName="servicio_id">
+      <mat-option *ngIf="cargandoServicios" disabled>Cargando servicios...</mat-option>
+      <mat-option *ngFor="let s of servicios" [value]="s.servicio_id">
+        {{ s.servicio_nombre || s.nombre_servicio || ('Servicio #' + s.servicio_id) }}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="form.get('servicio_id')?.hasError('required')">
+      El servicio es obligatorio
+    </mat-error>
+  </mat-form-field>
+
+  <div class="row">
+    <mat-form-field appearance="outline">
+      <mat-label>Cantidad</mat-label>
+      <input matInput type="number" formControlName="atencion_cantidad" min="1">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Precio</mat-label>
+      <input matInput type="number" formControlName="atencion_precio" min="0">
+    </mat-form-field>
+  </div>
+
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>Detalle de la atención</mat-label>
+    <textarea matInput rows="2" formControlName="atencion_detalle"></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>Diagnóstico</mat-label>
+    <textarea matInput rows="3" formControlName="diagnostico"></textarea>
+    <mat-error *ngIf="form.get('diagnostico')?.hasError('required')">
+      El diagnóstico es obligatorio
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>Tratamiento</mat-label>
+    <textarea matInput rows="3" formControlName="tratamiento"></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full">
+    <mat-label>Observaciones</mat-label>
+    <textarea matInput rows="2" formControlName="observaciones"></textarea>
+  </mat-form-field>
+
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="cancelar()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="guardar()">Guardar</button>
+</div>
+
