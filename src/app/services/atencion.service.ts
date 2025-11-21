@@ -1,68 +1,51 @@
-// src/app/services/atencion.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AtencionService {
-  private apiUrl = `${environment.apiUrl}/atenciones`;
+  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:3000/api/atenciones';
 
-  constructor(private http: HttpClient) {}
+  // Obtener todas las atenciones (opcional)
+  getAtenciones(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
+  }
 
-  // 👉 Listar atenciones por mascota
+  // Atenciones por mascota
   getAtencionesPorMascota(mascotaId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/mascota/${mascotaId}`);
   }
 
-  // 👉 Crear atención (con soporte opcional para archivo adjunto)
-  createAtencion(data: any, archivoAdjunto?: File): Observable<any> {
-    const formData = new FormData();
-
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        formData.append(key, String(value));
-      }
-    });
-
-    if (archivoAdjunto) {
-      formData.append('atencion_archivoAdjunto', archivoAdjunto);
-    }
-
-    return this.http.post<any>(this.apiUrl, formData);
+  // Obtener una atención por id
+  getAtencionById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
-  // Alias por si en algún lado usamos "crearAtencion"
-  crearAtencion(data: any, archivoAdjunto?: File): Observable<any> {
-    return this.createAtencion(data, archivoAdjunto);
+  // ===== METODOS QUE ESPERA EL FORMULARIO =====
+
+  // Crear atención (acepta FormData o JSON)
+  create(data: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, data);
   }
 
-  // 👉 Actualizar atención (también vía FormData por si se cambia el archivo)
-  updateAtencion(id: number, data: any, archivoAdjunto?: File): Observable<any> {
-    const formData = new FormData();
-
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        formData.append(key, String(value));
-      }
-    });
-
-    if (archivoAdjunto) {
-      formData.append('atencion_archivoAdjunto', archivoAdjunto);
-    }
-
-    return this.http.put<any>(`${this.apiUrl}/${id}`, formData);
+  // Actualizar atención
+  update(id: number, data: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, data);
   }
 
-  // Alias por si en algún lado usamos "actualizarAtencion"
-  actualizarAtencion(id: number, data: any, archivoAdjunto?: File): Observable<any> {
-    return this.updateAtencion(id, data, archivoAdjunto);
-  }
-
-  // 👉 Eliminar atención
+  // Eliminar atención
   deleteAtencion(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
+
+  // (Si quieres mantener también los nombres largos, puedes dejar estos alias)
+  createAtencion(data: any): Observable<any> {
+    return this.create(data);
+  }
+
+  updateAtencion(id: number, data: any): Observable<any> {
+    return this.update(id, data);
+  }
 }
+
