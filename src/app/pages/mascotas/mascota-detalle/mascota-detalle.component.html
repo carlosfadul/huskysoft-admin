@@ -1,7 +1,7 @@
 <div class="app-fondo">
   <div class="app-contenido">
 
-    <button mat-stroked-button (click)="volver()">← Volver a Mascotas</button>
+    <button mat-flat-button color="primary" (click)="volver()">← Volver a Mascotas</button>
 
     <mat-card *ngIf="mascota" class="info-mascota">
       <div class="info-header">
@@ -19,12 +19,10 @@
           </p>
         </div>
 
-        <img
-          *ngIf="mascota.mascota_foto"
-          [src]="'http://localhost:3000/api/mascotas/' + mascota.mascota_id + '/foto'"
-          width="100" height="100"
-          style="object-fit: cover; border-radius: 8px"
-        />
+        <img *ngIf="mascota.mascota_foto"
+             [src]="'http://localhost:3000/api/mascotas/' + mascota.mascota_id + '/foto'"
+             width="100" height="100"
+             style="object-fit: cover; border-radius: 8px" />
       </div>
     </mat-card>
 
@@ -179,115 +177,232 @@
         Esta mascota aún no tiene desparasitaciones registradas.
       </p>
     </mat-card>
-    <!-- ================= TRATAMIENTOS ================= -->
-<section class="bloque">
-  <div class="bloque-header">
-    <h3>Tratamientos</h3>
-    <button mat-stroked-button color="primary" (click)="toggleFormTratamiento()">
-      {{ mostrandoFormTratamiento ? 'Cancelar' : '+ Nuevo Tratamiento' }}
-    </button>
-  </div>
 
-  <form
-    *ngIf="mostrandoFormTratamiento"
-    (ngSubmit)="guardarTratamiento()"
-    #tratForm="ngForm"
-    class="form-tratamiento">
-
-    <label>
-      Tratamiento:
-      <select
-        required
-        name="tratamiento_id"
-        [(ngModel)]="nuevoTratamiento.tratamiento_id">
-        <option value="" disabled selected>Seleccione...</option>
-        <option *ngFor="let t of catalogoTratamientos" [value]="t.tratamiento_id">
-          {{ t.tratamiento_nombre }}
-        </option>
-      </select>
-    </label>
-
-    <label>
-      Dosis:
-      <input type="text" name="dosis" [(ngModel)]="nuevoTratamiento.dosis">
-    </label>
-
-    <label>
-      Frecuencia:
-      <input type="text" name="frecuencia" [(ngModel)]="nuevoTratamiento.frecuencia">
-    </label>
-
-    <label>
-      Inicio:
-      <input type="date" name="fecha_inicio" [(ngModel)]="nuevoTratamiento.fecha_inicio">
-    </label>
-
-    <label>
-      Fin:
-      <input type="date" name="fecha_fin" [(ngModel)]="nuevoTratamiento.fecha_fin">
-    </label>
-
-    <button
-      mat-flat-button
-      color="primary"
-      type="submit"
-      [disabled]="tratForm.invalid">
-      Guardar
-    </button>
-  </form>
-
-  <table
-    mat-table
-    [dataSource]="tratamientosMascota"
-    class="mat-elevation-z8"
-    *ngIf="tratamientosMascota.length">
-
-    <ng-container matColumnDef="nombre">
-      <th mat-header-cell *matHeaderCellDef>Tratamiento</th>
-      <td mat-cell *matCellDef="let tr">{{ tr.tratamiento_nombre }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="dosis">
-      <th mat-header-cell *matHeaderCellDef>Dosis</th>
-      <td mat-cell *matCellDef="let tr">{{ tr.dosis }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="frecuencia">
-      <th mat-header-cell *matHeaderCellDef>Frecuencia</th>
-      <td mat-cell *matCellDef="let tr">{{ tr.frecuencia }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="periodo">
-      <th mat-header-cell *matHeaderCellDef>Período</th>
-      <td mat-cell *matCellDef="let tr">
-        {{ tr.fecha_inicio | date:'dd/MM/yy' }} -
-        {{ tr.fecha_fin    | date:'dd/MM/yy' }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="estado">
-      <th mat-header-cell *matHeaderCellDef>Estado</th>
-      <td mat-cell *matCellDef="let tr">{{ tr.estado }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="acciones">
-      <th mat-header-cell *matHeaderCellDef>Acciones</th>
-      <td mat-cell *matCellDef="let tr">
-        <button mat-icon-button color="warn" (click)="eliminarTratamiento(tr.mascotaTratamiento_id)">
-          <mat-icon>delete</mat-icon>
+    <!-- ================= ENFERMEDADES ================= -->
+    <section class="bloque">
+      <div class="bloque-header">
+        <h3>Enfermedades</h3>
+        <button mat-flat-button color="primary" (click)="toggleFormEnfermedad()">
+          {{ mostrandoFormEnfermedad ? 'Cancelar' : '+ Registrar Enfermedad' }}
         </button>
-      </td>
-    </ng-container>
+      </div>
 
-    <tr mat-header-row *matHeaderRowDef="['nombre','dosis','frecuencia','periodo','estado','acciones']"></tr>
-    <tr mat-row *matRowDef="let row; columns: ['nombre','dosis','frecuencia','periodo','estado','acciones'];"></tr>
-  </table>
+      <form *ngIf="mostrandoFormEnfermedad"
+            (ngSubmit)="guardarEnfermedad()"
+            #enfForm="ngForm"
+            class="form-tratamiento">
 
-  <p *ngIf="!tratamientosMascota.length">
-    No hay tratamientos registrados para esta mascota.
-  </p>
-</section>
+        <label>
+          Enfermedad:
+          <select required name="enfermedad_id" [(ngModel)]="nuevaEnfermedad.enfermedad_id">
+            <option value="" disabled>Seleccione...</option>
+            <option *ngFor="let e of catalogoEnfermedades" [value]="e.enfermedad_id">
+              {{ e.enfermedad_nombre || e.nombre_enfermedad }}
+            </option>
+          </select>
+        </label>
 
+        <label>
+          Fecha diagnóstico:
+          <input type="date"
+                 name="fecha_diagnostico"
+                 [(ngModel)]="nuevaEnfermedad.fecha_diagnostico">
+        </label>
+
+        <label>
+          Estado:
+          <select name="estado" [(ngModel)]="nuevaEnfermedad.estado">
+            <option value="activa">Activa</option>
+            <option value="controlada">Controlada</option>
+            <option value="resuelta">Resuelta</option>
+          </select>
+        </label>
+
+        <label>
+          Observaciones:
+          <input type="text"
+                 name="observaciones"
+                 [(ngModel)]="nuevaEnfermedad.observaciones">
+        </label>
+
+        <button mat-flat-button color="primary" type="submit" [disabled]="enfForm.invalid">
+          Guardar
+        </button>
+      </form>
+
+      <table mat-table [dataSource]="enfermedadesMascota" class="mat-elevation-z8" *ngIf="enfermedadesMascota.length">
+        <ng-container matColumnDef="enfermedad">
+          <th mat-header-cell *matHeaderCellDef>Enfermedad</th>
+          <td mat-cell *matCellDef="let e">
+            {{ e.enfermedad_nombre || e.nombre_enfermedad }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="fecha">
+          <th mat-header-cell *matHeaderCellDef>Diagnóstico</th>
+          <td mat-cell *matCellDef="let e">
+            {{ e.fecha_diagnostico | date:'dd/MM/yy' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let e">
+            {{ e.estado }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let e">
+            <button mat-icon-button color="warn"
+                    (click)="eliminarEnfermedad(e.mascotaEnfermedad_id || e.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['enfermedad','fecha','estado','acciones']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['enfermedad','fecha','estado','acciones'];"></tr>
+      </table>
+
+      <p *ngIf="!enfermedadesMascota.length">
+        No hay enfermedades registradas para esta mascota.
+      </p>
+    </section>
+
+    <!-- ================= TRATAMIENTOS ================= -->
+    <section class="bloque">
+      <div class="bloque-header">
+        <h3>Tratamientos</h3>
+        <button mat-flat-button color="primary" (click)="toggleFormTratamiento()">
+          {{ mostrandoFormTratamiento ? 'Cancelar' : '+ Nuevo Tratamiento' }}
+        </button>
+      </div>
+
+      <form *ngIf="mostrandoFormTratamiento"
+            (ngSubmit)="guardarTratamiento()"
+            #tratForm="ngForm"
+            class="form-tratamiento">
+
+        <label>
+          Tratamiento:
+          <select required name="tratamiento_id" [(ngModel)]="nuevoTratamiento.tratamiento_id">
+            <option value="" disabled>Seleccione...</option>
+            <option *ngFor="let t of catalogoTratamientos" [value]="t.tratamiento_id">
+              {{ t.tratamiento_nombre }}
+            </option>
+          </select>
+        </label>
+
+        <label>
+          Dosis:
+          <input type="text" name="dosis" [(ngModel)]="nuevoTratamiento.dosis">
+        </label>
+
+        <label>
+          Frecuencia:
+          <input type="text" name="frecuencia" [(ngModel)]="nuevoTratamiento.frecuencia">
+        </label>
+
+        <label>
+          Inicio:
+          <input type="date" name="fecha_inicio" [(ngModel)]="nuevoTratamiento.fecha_inicio">
+        </label>
+
+        <label>
+          Fin:
+          <input type="date" name="fecha_fin" [(ngModel)]="nuevoTratamiento.fecha_fin">
+        </label>
+
+        <button mat-flat-button color="primary" type="submit" [disabled]="tratForm.invalid">
+          Guardar
+        </button>
+      </form>
+
+      <table mat-table [dataSource]="tratamientosMascota" class="mat-elevation-z8" *ngIf="tratamientosMascota.length">
+
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef>Tratamiento</th>
+          <td mat-cell *matCellDef="let tr">{{ tr.tratamiento_nombre }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="dosis">
+          <th mat-header-cell *matHeaderCellDef>Dosis</th>
+          <td mat-cell *matCellDef="let tr">{{ tr.dosis }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="frecuencia">
+          <th mat-header-cell *matHeaderCellDef>Frecuencia</th>
+          <td mat-cell *matCellDef="let tr">{{ tr.frecuencia }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="periodo">
+          <th mat-header-cell *matHeaderCellDef>Período</th>
+          <td mat-cell *matCellDef="let tr">
+            {{ tr.fecha_inicio | date:'dd/MM/yy' }} -
+            {{ tr.fecha_fin | date:'dd/MM/yy' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let tr">{{ tr.estado }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let tr">
+            <button mat-icon-button color="warn"
+                    (click)="eliminarTratamiento(tr.mascotaTratamiento_id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['nombre','dosis','frecuencia','periodo','estado','acciones']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['nombre','dosis','frecuencia','periodo','estado','acciones'];"></tr>
+      </table>
+
+      <p *ngIf="!tratamientosMascota.length">
+        No hay tratamientos registrados para esta mascota.
+      </p>
+    </section>
+
+    <!-- ====================== Remisiones ====================== -->
+    <div class="bloque-seccion">
+      <div class="bloque-header">
+        <h3>Remisiones</h3>
+        <button mat-flat-button color="primary" (click)="nuevaRemision()">
+          + Nueva Remisión
+        </button>
+      </div>
+
+      <ng-container *ngIf="remisiones && remisiones.length; else sinRemisiones">
+        <table class="tabla-simple">
+          <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Aliado</th>
+            <th>Servicios</th>
+            <th>Estado</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let r of remisiones">
+            <td>{{ r.remision_fecha | date:'short' }}</td>
+            <td>{{ r.nombre_aliado }}</td>
+            <td>{{ r.servicios_aliado }}</td>
+            <td>{{ r.remision_estado }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </ng-container>
+
+      <ng-template #sinRemisiones>
+        <p>Todavía no hay remisiones registradas.</p>
+      </ng-template>
+    </div>
 
   </div>
 </div>

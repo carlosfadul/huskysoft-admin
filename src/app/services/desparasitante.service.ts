@@ -1,35 +1,34 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class DesparasitanteService {
-
+  private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/desparasitantes`;
-
-  constructor(private http: HttpClient) {}
 
   getDesparasitantes(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
 
-  // CRUD opcional si luego lo necesitas:
-  getById(id: number): Observable<any> {
+  getDesparasitanteById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
-  create(data: any): Observable<any> {
-    return this.http.post(this.apiUrl, data);
+  createDesparasitante(payload: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, payload);
   }
 
-  update(id: number, data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, data);
+  updateDesparasitante(id: number, payload: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, payload);
   }
 
-  delete(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  deleteDesparasitante(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 }
+
+
+
+

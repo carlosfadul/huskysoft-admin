@@ -1,3 +1,4 @@
+// src/app/pages/mascotas/mascota-detalle/mascota-detalle.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -7,16 +8,21 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
+
 import { MascotaService } from '../../../services/mascota.service';
 import { AtencionService } from '../../../services/atencion.service';
 import { AplicacionVacunaService } from '../../../services/aplicacion-vacuna.service';
 import { AplicacionDesparasitanteService } from '../../../services/aplicacion-desparasitante.service';
+import { MascotaTratamientoService } from '../../../services/mascota-tratamiento.service';
+import { TratamientoService } from '../../../services/tratamiento.service';
+import { RemisionService } from '../../../services/remision.service';
+import { MascotaEnfermedadService } from '../../../services/mascota-enfermedad.service';
+import { EnfermedadService } from '../../../services/enfermedad.service';
+
 import { AtencionFormComponent } from '../../../components/atencion-form/atencion-form.component';
 import { VacunaAplicacionFormComponent } from '../../../components/vacuna-aplicacion-form/vacuna-aplicacion-form.component';
 import { DesparasitacionAplicacionFormComponent } from '../../../components/desparasitacion-aplicacion-form/desparasitacion-aplicacion-form.component';
-import { MascotaTratamientoService } from '../../../services/mascota-tratamiento.service';
-import { TratamientoService } from '../../../services/tratamiento.service';
-
+import { RemisionFormComponent } from '../../../components/remision-form/remision-form.component';
 
 @Component({
   selector: 'app-mascota-detalle-page',
@@ -43,13 +49,15 @@ export class MascotaDetalleComponent implements OnInit {
   atenciones: any[] = [];
   vacunasAplicadas: any[] = [];
   desparasitaciones: any[] = [];
+  remisiones: any[] = [];
 
   columnasAtenciones: string[] = ['fecha', 'motivo', 'diagnostico', 'acciones'];
   columnasVacunas: string[] = ['fecha', 'vacuna', 'lote', 'acciones'];
   columnasDesparasitaciones: string[] = ['fecha', 'producto', 'dosis', 'acciones'];
-    tratamientosMascota: any[] = [];
-  catalogoTratamientos: any[] = [];
 
+  // Tratamientos
+  tratamientosMascota: any[] = [];
+  catalogoTratamientos: any[] = [];
   mostrandoFormTratamiento = false;
   nuevoTratamiento: any = {
     tratamiento_id: null,
@@ -57,10 +65,20 @@ export class MascotaDetalleComponent implements OnInit {
     frecuencia: '',
     fecha_inicio: '',
     fecha_fin: '',
-    estado: 'activo',
+    estado: 'activa',        // ojo: debe coincidir con el ENUM de la tabla
     observaciones: ''
   };
 
+  // Enfermedades
+  enfermedadesMascota: any[] = [];
+  catalogoEnfermedades: any[] = [];
+  mostrandoFormEnfermedad = false;
+  nuevaEnfermedad: any = {
+    enfermedad_id: null,
+    fecha_diagnostico: '',
+    estado: 'activa',
+    observaciones: ''
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -69,10 +87,13 @@ export class MascotaDetalleComponent implements OnInit {
     private atencionService: AtencionService,
     private aplicacionVacunaService: AplicacionVacunaService,
     private aplicacionDesparasitanteService: AplicacionDesparasitanteService,
-    private dialog: MatDialog,
     private mascotaTratamientoService: MascotaTratamientoService,
     private tratamientoService: TratamientoService,
-  ) {}
+    private remisionService: RemisionService,
+    private mascotaEnfermedadService: MascotaEnfermedadService,
+    private enfermedadService: EnfermedadService,
+    private dialog: MatDialog
+  ) { }
 
   ngOnInit(): void {
     const params = this.route.snapshot.paramMap;
@@ -84,12 +105,18 @@ export class MascotaDetalleComponent implements OnInit {
     this.cargarAtenciones();
     this.cargarVacunas();
     this.cargarDesparasitaciones();
+
     this.cargarTratamientosMascota();
     this.cargarCatalogoTratamientos();
 
+    this.cargarEnfermedadesMascota();
+    this.cargarCatalogoEnfermedades();
+
+    this.cargarRemisiones();
   }
 
-    cargarTratamientosMascota(): void {
+  // ---------- Tratamientos ----------
+  cargarTratamientosMascota(): void {
     this.mascotaTratamientoService.getPorMascota(this.mascotaId).subscribe({
       next: (res: any[]) => this.tratamientosMascota = res,
       error: (err: any) => console.error('Error al obtener tratamientos de la mascota', err)
@@ -112,7 +139,7 @@ export class MascotaDetalleComponent implements OnInit {
         frecuencia: '',
         fecha_inicio: '',
         fecha_fin: '',
-        estado: 'activo',
+        estado: 'activa',
         observaciones: ''
       };
     }
@@ -131,7 +158,7 @@ export class MascotaDetalleComponent implements OnInit {
       fecha_inicio: this.nuevoTratamiento.fecha_inicio || null,
       fecha_fin: this.nuevoTratamiento.fecha_fin || null,
       estado: this.nuevoTratamiento.estado,
-      observaciones: this.nuevoTratamiento.observaciones
+      observaciones: this.nuevoTratamiento.observaciones || null
     };
 
     this.mascotaTratamientoService.create(payload).subscribe({
@@ -153,6 +180,90 @@ export class MascotaDetalleComponent implements OnInit {
     });
   }
 
+  // ---------- Enfermedades ----------
+  cargarEnfermedadesMascota(): void {
+    this.mascotaEnfermedadService.getPorMascota(this.mascotaId).subscribe({
+      next: (res: any[]) => this.enfermedadesMascota = res,
+      error: (err: any) => console.error('Error al obtener enfermedades de la mascota', err)
+    });
+  }
+
+  cargarCatalogoEnfermedades(): void {
+    this.enfermedadService.getEnfermedades().subscribe({
+      next: (res: any[]) => this.catalogoEnfermedades = res,
+      error: (err: any) => console.error('Error al obtener catálogo de enfermedades', err)
+    });
+  }
+
+  toggleFormEnfermedad(): void {
+    this.mostrandoFormEnfermedad = !this.mostrandoFormEnfermedad;
+    if (!this.mostrandoFormEnfermedad) {
+      this.nuevaEnfermedad = {
+        enfermedad_id: null,
+        fecha_diagnostico: '',
+        estado: 'activa',
+        observaciones: ''
+      };
+    }
+  }
+
+  guardarEnfermedad(): void {
+    if (!this.nuevaEnfermedad.enfermedad_id) {
+      return;
+    }
+
+    const payload = {
+      mascota_id: this.mascotaId,
+      enfermedad_id: this.nuevaEnfermedad.enfermedad_id,
+      fecha_diagnostico: this.nuevaEnfermedad.fecha_diagnostico || null,
+      estado: this.nuevaEnfermedad.estado,
+      observaciones: this.nuevaEnfermedad.observaciones || null
+    };
+
+    this.mascotaEnfermedadService.create(payload).subscribe({
+      next: () => {
+        this.toggleFormEnfermedad();
+        this.cargarEnfermedadesMascota();
+      },
+      error: (err: any) => console.error('Error al guardar enfermedad de la mascota', err)
+    });
+  }
+
+  eliminarEnfermedad(id: number): void {
+    const confirmado = confirm('¿Eliminar esta enfermedad de la mascota?');
+    if (!confirmado) return;
+
+    this.mascotaEnfermedadService.delete(id).subscribe({
+      next: () => this.cargarEnfermedadesMascota(),
+      error: (err: any) => console.error('Error al eliminar enfermedad de la mascota', err)
+    });
+  }
+
+  // ---------- Remisiones ----------
+  cargarRemisiones(): void {
+    if (!this.mascotaId) { return; }
+
+    this.remisionService.getRemisionesPorMascota(this.mascotaId).subscribe({
+      next: (data) => this.remisiones = data,
+      error: (err) => console.error('Error al obtener remisiones de la mascota', err)
+    });
+  }
+
+  nuevaRemision(): void {
+    const dialogRef = this.dialog.open(RemisionFormComponent, {
+      width: '600px',
+      data: {
+        mascotaId: this.mascotaId,
+        sucursalId: this.sucursalId
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((recargar: boolean) => {
+      if (recargar) {
+        this.cargarRemisiones();
+      }
+    });
+  }
 
   // ---------- Mascota ----------
   cargarMascota(): void {
@@ -210,7 +321,7 @@ export class MascotaDetalleComponent implements OnInit {
     });
   }
 
-  // ---------- Vacunas aplicadas ----------
+  // ---------- Vacunas ----------
   cargarVacunas(): void {
     this.aplicacionVacunaService.getPorMascota(this.mascotaId).subscribe({
       next: (rows: any[]) => (this.vacunasAplicadas = rows),
@@ -314,3 +425,4 @@ export class MascotaDetalleComponent implements OnInit {
     ]);
   }
 }
+

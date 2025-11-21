@@ -33,16 +33,16 @@ export const routes: Routes = [
         .then(m => m.VeterinariasComponent),
   },
 
+  // Panel admin de una veterinaria (superadmin/admin)
   {
-  path: 'veterinaria/:veterinariaId/admin',
-  canActivate: [roleGuard],
-  data: { roles: ['superadmin', 'admin'] },
-  loadComponent: () =>
-    import('./pages/veterinaria-admin/veterinaria-admin.component').then(
-      m => m.VeterinariaAdminComponent
-    ),
-},
-
+    path: 'veterinaria/:veterinariaId/admin',
+    canActivate: [roleGuard],
+    data: { roles: ['superadmin', 'admin'] },
+    loadComponent: () =>
+      import('./pages/veterinaria-admin/veterinaria-admin.component').then(
+        m => m.VeterinariaAdminComponent
+      ),
+  },
 
   // Sucursales por veterinaria
   {
@@ -53,7 +53,7 @@ export const routes: Routes = [
         .then(m => m.SucursalesComponent),
   },
 
-  // Dashboard operativo de una sucursal
+  // Dashboard operativo de una sucursal (con sus rutas hijas)
   {
     path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/dashboard',
     canActivate: [authGuard],
@@ -62,7 +62,7 @@ export const routes: Routes = [
         .then(m => m.sucursalDashboardRoutes),
   },
 
-  // Configuración dentro del dashboard de sucursal
+  // ================== CONFIGURACIÓN DE LA SUCURSAL ==================
   {
     path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/dashboard/configuracion',
     canActivate: [authGuard],
@@ -91,6 +91,15 @@ export const routes: Routes = [
           import('./pages/aliados/aliados.component')
             .then(m => m.AliadosComponent),
       },
+      
+      {
+        path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/dashboard/aliados/:aliadoId/servicios',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/aliados/servicios-aliado/servicios-aliado.component')
+            .then(m => m.ServiciosAliadoComponent),
+      },
+
       {
         path: 'tratamientos',
         canActivate: [authGuard],
@@ -126,11 +135,28 @@ export const routes: Routes = [
           import('./pages/productos/productos.component')
             .then(m => m.ProductosComponent),
       },
+      // 👉 NUEVOS: VACUNAS Y DESPARASITANTES DENTRO DE CONFIGURACIÓN
+      {
+        path: 'vacunas',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/configuracion/vacunas/vacunas.component')
+            .then(m => m.VacunasComponent),
+      },
+      {
+        path: 'desparasitantes',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/configuracion/desparasitantes/desparasitantes.component')
+            .then(m => m.DesparasitantesComponent),
+      },
+
+      // default de configuración -> usuarios
       { path: '', pathMatch: 'full', redirectTo: 'usuarios' },
     ],
   },
 
-  // Detalle de nómina
+  // ================== NÓMINA ==================
   {
     path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/nomina/:nominaId/detalle',
     canActivate: [authGuard],
@@ -146,30 +172,25 @@ export const routes: Routes = [
         .then(m => m.DetalleNominaComponent),
   },
 
-  // --- NUEVO: NECESARIO PARA QUE NO EXPLOTE EL SISTEMA
+  // ================== MASCOTA DETALLE ==================
+  {
+    path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/dashboard/mascotas/:mascotaId/detalle',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/mascotas/mascota-detalle/mascota-detalle.component')
+        .then(m => m.MascotaDetalleComponent),
+  },
+
+
+
+  // ================== ERRORES / WILDCARD ==================
   {
     path: 'forbidden',
     loadComponent: () =>
       import('./pages/errors/forbidden/forbidden.component')
         .then(m => m.ForbiddenComponent),
   },
-  {
-  path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/dashboard/mascotas/:mascotaId/detalle',
-  loadComponent: () =>
-    import('./pages/mascotas/mascota-detalle/mascota-detalle.component')
-      .then(m => m.MascotaDetalleComponent)
-},
 
-{
-  path: 'veterinaria/:veterinariaId/sucursal/:sucursalId/dashboard/mascotas/:mascotaId/detalle',
-  loadComponent: () =>
-    import('./pages/mascotas/mascota-detalle/mascota-detalle.component')
-      .then(m => m.MascotaDetalleComponent)
-},
-
-
-
-  // Wildcard
-  { path: '**', redirectTo: 'forbidden' }
-
+  // Cualquier ruta desconocida -> forbidden (luego podrías cambiar a 404)
+  { path: '**', redirectTo: 'forbidden' },
 ];
